@@ -13,8 +13,11 @@
     }
 
     :root {
-      --accent: #7dd3fc;
-      --accent-glow: rgba(125, 211, 252, 0.4);
+      --accent: #2ec7ff;
+      --accent-glow: rgba(46, 199, 255, 0.45);
+      --accent-bg: rgba(46, 199, 255, 0.1);
+      --accent-border: rgba(46, 199, 255, 0.35);
+
       --bg-base: #0a0d14;
       --panel-bg: rgba(20, 24, 33, 0.55);
       --panel-border: rgba(255, 255, 255, 0.08);
@@ -23,6 +26,20 @@
       --text-primary: #f5f7fa;
       --text-secondary: #8a93a6;
       --text-muted: #5a6273;
+
+      --male-color: #2ec7ff;
+      --male-glow: rgba(46, 199, 255, 0.45);
+      --male-bg: rgba(46, 199, 255, 0.1);
+      --male-border: rgba(46, 199, 255, 0.35);
+
+      --female-color: #ff6ec7;
+      --female-glow: rgba(255, 110, 199, 0.45);
+      --female-bg: rgba(255, 110, 199, 0.1);
+      --female-border: rgba(255, 110, 199, 0.35);
+
+      --new-color: #ff3b3b;
+      --new-glow: rgba(255, 59, 59, 0.8);
+      --new-glow-soft: rgba(255, 59, 59, 0.35);
 
       --rar-common: #94a3b8;
       --rar-common-bg: rgba(148, 163, 184, 0.12);
@@ -45,12 +62,26 @@
       --rar-unknown-bd: rgba(248, 113, 113, 0.4);
     }
 
+    html[data-gender="male"] {
+      --accent: var(--male-color);
+      --accent-glow: var(--male-glow);
+      --accent-bg: var(--male-bg);
+      --accent-border: var(--male-border);
+    }
+
+    html[data-gender="female"] {
+      --accent: var(--female-color);
+      --accent-glow: var(--female-glow);
+      --accent-bg: var(--female-bg);
+      --accent-border: var(--female-border);
+    }
+
     html, body { min-height: 100vh; }
 
     body {
       background-color: var(--bg-base);
       background-image:
-        radial-gradient(circle at 15% 20%, rgba(125, 211, 252, 0.08), transparent 45%),
+        radial-gradient(circle at 15% 20%, var(--accent-bg), transparent 45%),
         radial-gradient(circle at 85% 75%, rgba(167, 139, 250, 0.07), transparent 50%),
         radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.015), transparent 70%);
       background-attachment: fixed;
@@ -62,6 +93,7 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       line-height: 1.5;
+      transition: background-image 0.5s ease;
     }
 
     .header {
@@ -81,6 +113,7 @@
       background: var(--accent);
       box-shadow: 0 0 12px var(--accent-glow);
       flex-shrink: 0;
+      transition: background 0.4s ease, box-shadow 0.4s ease;
     }
 
     .eyebrow {
@@ -106,8 +139,13 @@
       max-width: 620px;
     }
 
-    .subhead strong { color: var(--accent); font-weight: 500; }
+    .subhead strong {
+      color: var(--accent);
+      font-weight: 500;
+      transition: color 0.4s ease;
+    }
 
+    /* ---------- GENDER BAR ---------- */
     .gender-bar {
       position: sticky;
       top: 1rem;
@@ -117,73 +155,169 @@
       display: flex;
       align-items: center;
       gap: 0.75rem;
-      padding: 0.55rem;
+      padding: 0.75rem;
       margin-bottom: 1.5rem;
-      background: rgba(20, 24, 33, 0.6);
-      backdrop-filter: blur(20px) saturate(140%);
-      -webkit-backdrop-filter: blur(20px) saturate(140%);
+      background: rgba(20, 24, 33, 0.7);
+      backdrop-filter: blur(24px) saturate(150%);
+      -webkit-backdrop-filter: blur(24px) saturate(150%);
       border: 1px solid var(--panel-border);
-      border-radius: 14px;
-      box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.6);
+      border-radius: 16px;
+      box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.7);
+      flex-wrap: wrap;
+      transition: border-color 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    .gender-buttons {
+      display: flex;
+      gap: 0.5rem;
+      flex: 1;
       flex-wrap: wrap;
     }
-
-    .gender-bar-label {
-      font-size: 0.68rem;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      font-weight: 500;
-      padding-left: 0.75rem;
-      padding-right: 0.25rem;
-      white-space: nowrap;
-    }
-
-    .gender-buttons { display: flex; gap: 0.4rem; flex: 1; flex-wrap: wrap; }
 
     .gender-btn {
       display: inline-flex;
       align-items: center;
-      gap: 0.45rem;
-      background: transparent;
-      border: 1px solid transparent;
+      justify-content: center;
+      gap: 0.6rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--panel-border);
       color: var(--text-secondary);
-      font-size: 0.82rem;
-      font-weight: 500;
-      letter-spacing: 0.02em;
-      padding: 0.55rem 1.1rem;
-      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 0.85rem 1.75rem;
+      border-radius: 12px;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.25s ease;
       font-family: inherit;
       white-space: nowrap;
+      flex: 1;
+      min-width: 120px;
+      text-transform: uppercase;
     }
 
     .gender-btn svg {
-      width: 14px; height: 14px;
+      width: 18px; height: 18px;
       stroke: currentColor;
-      stroke-width: 2;
+      stroke-width: 2.2;
       fill: none;
       flex-shrink: 0;
     }
 
-    .gender-btn:hover { color: var(--text-primary); background: rgba(255, 255, 255, 0.04); }
+    .gender-btn:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.06);
+      border-color: var(--panel-border-hover);
+    }
 
-    .gender-btn.active {
-      background: rgba(125, 211, 252, 0.1);
-      border-color: rgba(125, 211, 252, 0.3);
+    .gender-btn[data-target="male"]:hover {
+      color: var(--male-color);
+      border-color: var(--male-border);
+      box-shadow: 0 0 20px -8px var(--male-glow);
+    }
+
+    .gender-btn[data-target="female"]:hover {
+      color: var(--female-color);
+      border-color: var(--female-border);
+      box-shadow: 0 0 20px -8px var(--female-glow);
+    }
+
+    .gender-btn[data-target="male"].active {
+      background: var(--male-bg);
+      border-color: var(--male-border);
+      color: var(--male-color);
+      box-shadow: 0 0 25px -6px var(--male-glow), inset 0 0 20px -10px var(--male-glow);
+      text-shadow: 0 0 12px var(--male-glow);
+    }
+
+    .gender-btn[data-target="female"].active {
+      background: var(--female-bg);
+      border-color: var(--female-border);
+      color: var(--female-color);
+      box-shadow: 0 0 25px -6px var(--female-glow), inset 0 0 20px -10px var(--female-glow);
+      text-shadow: 0 0 12px var(--female-glow);
+    }
+
+    /* ---------- INFO BUTTON ---------- */
+    .info-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--panel-border);
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      padding: 0.85rem 1.25rem;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      font-family: inherit;
+      white-space: nowrap;
+      text-transform: uppercase;
+      position: relative;
+    }
+
+    .info-btn svg {
+      width: 16px; height: 16px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .info-btn:hover {
       color: var(--accent);
+      background: var(--accent-bg);
+      border-color: var(--accent-border);
       box-shadow: 0 0 20px -8px var(--accent-glow);
     }
 
-    .gender-bar-count {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      letter-spacing: 0.04em;
-      padding-right: 0.75rem;
-      white-space: nowrap;
+    /* State NEW: tombol info berdenyut merah */
+    .info-btn.has-new {
+      color: var(--new-color);
+      background: rgba(255, 59, 59, 0.1);
+      border-color: rgba(255, 59, 59, 0.55);
+      animation: infoBtnPulse 1.8s ease-in-out infinite;
     }
 
+    .info-btn.has-new:hover {
+      color: #ff6b6b;
+      background: rgba(255, 59, 59, 0.18);
+      border-color: rgba(255, 59, 59, 0.85);
+      animation-play-state: paused;
+      box-shadow:
+        0 0 30px -6px var(--new-glow),
+        0 0 50px -10px var(--new-glow-soft);
+    }
+
+    @keyframes infoBtnPulse {
+      0%, 100% {
+        box-shadow:
+          0 0 20px -4px var(--new-glow-soft),
+          0 0 0 0 rgba(255, 59, 59, 0.55);
+        border-color: rgba(255, 59, 59, 0.55);
+      }
+      50% {
+        box-shadow:
+          0 0 30px -4px var(--new-glow),
+          0 0 45px -10px var(--new-glow-soft),
+          0 0 0 6px rgba(255, 59, 59, 0);
+        border-color: rgba(255, 59, 59, 0.9);
+      }
+    }
+
+    .info-btn.has-new svg {
+      animation: infoIconPulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes infoIconPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+    }
+
+    /* ---------- LEGEND ---------- */
     .legend-bar {
       width: 100%;
       max-width: 1100px;
@@ -228,6 +362,7 @@
     .legend-item.legend   { color: var(--rar-legend);    background: var(--rar-legend-bg);    border-color: var(--rar-legend-bd); }
     .legend-item.unknown  { color: var(--rar-unknown);   background: var(--rar-unknown-bg);   border-color: var(--rar-unknown-bd); }
 
+    /* ---------- VIEW PANEL ---------- */
     .view-panel {
       width: 100%;
       max-width: 1100px;
@@ -263,6 +398,7 @@
       height: 1px;
       background: linear-gradient(90deg, var(--accent) 0%, transparent 40%);
       opacity: 0.4;
+      transition: background 0.4s ease;
     }
 
     .group-label-text {
@@ -273,6 +409,7 @@
       color: var(--accent);
       text-shadow: 0 0 20px var(--accent-glow);
       white-space: nowrap;
+      transition: color 0.4s ease, text-shadow 0.4s ease;
     }
 
     .category-section { display: flex; flex-direction: column; gap: 1.25rem; }
@@ -295,12 +432,13 @@
       justify-content: center;
       width: 32px; height: 32px;
       border-radius: 9px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--panel-border);
+      background: var(--accent-bg);
+      border: 1px solid var(--accent-border);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       flex-shrink: 0;
       color: var(--accent);
+      transition: all 0.4s ease;
     }
 
     .category-icon svg {
@@ -365,9 +503,9 @@
     }
 
     .card:hover {
-      border-color: var(--panel-border-hover);
+      border-color: var(--accent-border);
       transform: translateY(-3px);
-      box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(125, 211, 252, 0.05);
+      box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.7), 0 0 0 1px var(--accent-bg);
     }
 
     .card[data-rarity="common"]   { border-color: rgba(148, 163, 184, 0.18); }
@@ -392,7 +530,7 @@
     }
 
     .grouped-card:hover {
-      border-color: var(--panel-border-hover);
+      border-color: var(--accent-border);
       transform: translateY(-3px);
       box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.7);
     }
@@ -436,7 +574,10 @@
       transition: all 0.2s ease;
     }
 
-    .chip:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--panel-border-hover); }
+    .chip:hover {
+      background: var(--accent-bg);
+      border-color: var(--accent-border);
+    }
     .chip.muted { font-style: italic; color: var(--text-muted); }
 
     .rarity-badge {
@@ -476,9 +617,10 @@
       align-items: center;
       padding: 1.25rem 1rem;
       height: 180px;
-      background: radial-gradient(circle at 50% 40%, rgba(125, 211, 252, 0.05), transparent 65%);
+      background: radial-gradient(circle at 50% 40%, var(--accent-bg), transparent 65%);
       border-bottom: 1px solid var(--divider);
       overflow: hidden;
+      transition: background 0.4s ease;
     }
 
     .image-wrapper img {
@@ -497,7 +639,9 @@
 
     .image-wrapper.dual {
       gap: 0.75rem;
-      padding: 1rem 0.75rem;
+      padding: 1.25rem 0.75rem 2.25rem;
+      height: 210px;
+      position: relative;
     }
 
     .image-wrapper.dual .img-cell {
@@ -521,6 +665,31 @@
       background: var(--divider);
     }
 
+    /* Set name di tengah bawah untuk uniform */
+    .set-name-badge {
+      position: absolute;
+      left: 50%;
+      bottom: 0.85rem;
+      transform: translateX(-50%);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: var(--text-primary);
+      background: rgba(20, 24, 33, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--accent-border);
+      padding: 0.3rem 0.9rem;
+      border-radius: 30px;
+      white-space: nowrap;
+      z-index: 3;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5), 0 0 15px -6px var(--accent-glow);
+      max-width: calc(100% - 2rem);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: border-color 0.4s ease, box-shadow 0.4s ease;
+    }
+
     .rarity-badge.float {
       position: absolute;
       top: 0.65rem;
@@ -537,13 +706,14 @@
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--accent);
-      background: rgba(125, 211, 252, 0.1);
-      border: 1px solid rgba(125, 211, 252, 0.25);
+      background: var(--accent-bg);
+      border: 1px solid var(--accent-border);
       padding: 0.2rem 0.55rem;
       border-radius: 6px;
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       z-index: 3;
+      transition: all 0.4s ease;
     }
 
     .slot-badge.mini {
@@ -587,8 +757,10 @@
       overflow: hidden;
       text-overflow: ellipsis;
       text-shadow: 0 0 12px var(--accent-glow);
+      transition: color 0.4s ease, text-shadow 0.4s ease;
     }
 
+    /* Uniform: hanya ID, tanpa nama duplikat */
     .id-list {
       display: flex;
       flex-direction: column;
@@ -616,6 +788,7 @@
       border-radius: 50%;
       background: var(--accent);
       box-shadow: 0 0 6px var(--accent-glow);
+      transition: background 0.4s ease, box-shadow 0.4s ease;
     }
 
     .id-item-body {
@@ -625,17 +798,7 @@
       gap: 0.4rem;
     }
 
-    .id-item-body .name {
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-      font-weight: 500;
-      flex: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .id-item-body .id-text { font-size: 0.72rem; flex-shrink: 0; }
+    .id-item-body .id-text { font-size: 0.76rem; flex: 1; }
 
     .copy-btn {
       display: inline-flex;
@@ -659,8 +822,8 @@
     }
 
     .copy-btn:hover {
-      background: rgba(125, 211, 252, 0.1);
-      border-color: rgba(125, 211, 252, 0.3);
+      background: var(--accent-bg);
+      border-color: var(--accent-border);
       color: var(--accent);
     }
 
@@ -694,9 +857,10 @@
       align-items: center;
       padding: 1.25rem 1rem;
       height: 180px;
-      background: radial-gradient(circle at 50% 40%, rgba(125, 211, 252, 0.05), transparent 65%);
+      background: radial-gradient(circle at 50% 40%, var(--accent-bg), transparent 65%);
       border-bottom: 1px solid var(--divider);
       position: relative;
+      transition: background 0.4s ease;
     }
 
     .swatch-circle {
@@ -730,16 +894,16 @@
       background: rgba(20, 24, 33, 0.85);
       backdrop-filter: blur(20px) saturate(140%);
       -webkit-backdrop-filter: blur(20px) saturate(140%);
-      border: 1px solid var(--panel-border-hover);
+      border: 1px solid var(--accent-border);
       color: var(--text-primary);
       padding: 0.7rem 1.25rem;
       border-radius: 12px;
       font-size: 0.82rem;
       font-weight: 500;
       letter-spacing: 0.02em;
-      box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.8);
+      box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.8), 0 0 20px -8px var(--accent-glow);
       opacity: 0;
-      transition: opacity 0.25s ease, transform 0.25s ease;
+      transition: opacity 0.25s ease, transform 0.25s ease, border-color 0.4s ease, box-shadow 0.4s ease;
       pointer-events: none;
       z-index: 999;
       display: flex;
@@ -755,12 +919,277 @@
       background: var(--accent);
       box-shadow: 0 0 10px var(--accent-glow);
       flex-shrink: 0;
+      transition: background 0.4s ease, box-shadow 0.4s ease;
     }
 
     .toast-message.error .toast-dot {
       background: #f87171;
       box-shadow: 0 0 10px rgba(248, 113, 113, 0.6);
     }
+
+    /* ---------- MODAL INFO ---------- */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 7, 11, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 900;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal-overlay.show { display: flex; opacity: 1; }
+
+    .modal-content {
+      position: relative;
+      background: rgba(20, 24, 33, 0.85);
+      backdrop-filter: blur(28px) saturate(160%);
+      -webkit-backdrop-filter: blur(28px) saturate(160%);
+      border: 1px solid var(--accent-border);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 900px;
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.9), 0 0 30px -12px var(--accent-glow);
+      transform: scale(0.95) translateY(10px);
+      transition: transform 0.25s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    .modal-overlay.show .modal-content { transform: scale(1) translateY(0); }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--divider);
+      flex-shrink: 0;
+    }
+
+    .modal-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .modal-title-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 12px var(--accent-glow);
+      flex-shrink: 0;
+      transition: background 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    .modal-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--text-primary);
+    }
+
+    .modal-close {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--panel-border);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      flex-shrink: 0;
+    }
+
+    .modal-close svg {
+      width: 16px; height: 16px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .modal-close:hover {
+      background: rgba(248, 113, 113, 0.12);
+      border-color: rgba(248, 113, 113, 0.35);
+      color: #f87171;
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    .info-column {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      padding: 1.25rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--panel-border);
+      border-radius: 14px;
+      min-width: 0;
+      transition: all 0.25s ease;
+    }
+
+    .info-column[data-gender="male"] {
+      border-left: 3px solid var(--male-color);
+      box-shadow: inset 4px 0 20px -12px var(--male-glow);
+    }
+
+    .info-column[data-gender="female"] {
+      border-left: 3px solid var(--female-color);
+      box-shadow: inset 4px 0 20px -12px var(--female-glow);
+    }
+
+    .info-column.is-new {
+      background: linear-gradient(135deg, rgba(255, 59, 59, 0.08) 0%, rgba(255, 59, 59, 0.02) 100%);
+      border-color: rgba(255, 59, 59, 0.5);
+      animation: newPulse 2.4s ease-in-out infinite;
+    }
+
+    .info-column.is-new[data-gender="male"] {
+      border-left-color: var(--male-color);
+    }
+
+    .info-column.is-new[data-gender="female"] {
+      border-left-color: var(--female-color);
+    }
+
+    @keyframes newPulse {
+      0%, 100% { box-shadow: 0 0 30px -8px rgba(255, 59, 59, 0.4), inset 0 0 30px -18px rgba(255, 59, 59, 0.3); }
+      50% { box-shadow: 0 0 40px -6px rgba(255, 59, 59, 0.7), inset 0 0 35px -15px rgba(255, 59, 59, 0.55); }
+    }
+
+    .info-column-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--divider);
+      flex-wrap: wrap;
+    }
+
+    .info-column-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px; height: 30px;
+      border-radius: 9px;
+      flex-shrink: 0;
+      transition: all 0.25s ease;
+    }
+
+    .info-column-icon svg {
+      width: 15px; height: 15px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .info-column[data-gender="male"] .info-column-icon {
+      background: var(--male-bg);
+      border: 1px solid var(--male-border);
+      color: var(--male-color);
+    }
+
+    .info-column[data-gender="female"] .info-column-icon {
+      background: var(--female-bg);
+      border: 1px solid var(--female-border);
+      color: var(--female-color);
+    }
+
+    .info-column-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: all 0.25s ease;
+      flex: 1;
+    }
+
+    .info-column[data-gender="male"] .info-column-title {
+      color: var(--male-color);
+      text-shadow: 0 0 15px var(--male-glow);
+    }
+
+    .info-column[data-gender="female"] .info-column-title {
+      color: var(--female-color);
+      text-shadow: 0 0 15px var(--female-glow);
+    }
+
+    .info-new-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.58rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      padding: 0.28rem 0.6rem;
+      border-radius: 30px;
+      background: linear-gradient(135deg, #ff3b3b, #ff6b00);
+      color: white;
+      box-shadow: 0 0 15px rgba(255, 59, 59, 0.7), 0 0 25px rgba(255, 107, 0, 0.4), inset 0 0 8px rgba(255, 255, 255, 0.2);
+      animation: newBadgePulse 1.6s ease-in-out infinite;
+      white-space: nowrap;
+    }
+
+    .info-new-badge::before {
+      content: '';
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: white;
+      box-shadow: 0 0 6px white;
+      animation: newBadgeDot 1s ease-in-out infinite;
+    }
+
+    @keyframes newBadgePulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(255, 59, 59, 0.7), 0 0 25px rgba(255, 107, 0, 0.4), inset 0 0 8px rgba(255, 255, 255, 0.2); }
+      50% { transform: scale(1.06); box-shadow: 0 0 22px rgba(255, 59, 59, 0.95), 0 0 40px rgba(255, 107, 0, 0.6), inset 0 0 8px rgba(255, 255, 255, 0.35); }
+    }
+
+    @keyframes newBadgeDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    .info-column-text {
+      font-size: 0.85rem;
+      line-height: 1.65;
+      color: var(--text-secondary);
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      white-space: pre-wrap;
+      hyphens: auto;
+    }
+
+    .info-column.is-new .info-column-text { color: var(--text-primary); }
+
+    .modal-body::-webkit-scrollbar { width: 6px; }
+    .modal-body::-webkit-scrollbar-track { background: transparent; }
+    .modal-body::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
+    .modal-body::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.18); }
 
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -769,18 +1198,27 @@
 
     @media (max-width: 640px) {
       body { padding: 1.5rem 1rem 3rem; }
-      .gender-bar { top: 0.5rem; padding: 0.5rem; gap: 0.5rem; }
-      .gender-bar-label { display: none; }
-      .gender-btn { flex: 1; justify-content: center; padding: 0.5rem 0.7rem; font-size: 0.76rem; }
-      .gender-bar-count { display: none; }
+      .gender-bar { top: 0.5rem; padding: 0.6rem; gap: 0.5rem; }
+      .gender-btn { padding: 0.7rem 1rem; font-size: 0.82rem; min-width: 90px; }
+      .gender-btn svg { width: 15px; height: 15px; }
+      .info-btn { padding: 0.7rem 0.9rem; font-size: 0.78rem; }
+      .info-btn span { display: none; }
+      .info-btn svg { width: 18px; height: 18px; }
       .grid-container { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
       .grid-container.wide { grid-template-columns: 1fr; }
       .image-wrapper { height: 150px; padding: 1rem 0.75rem; }
       .image-wrapper img { max-height: 120px; }
+      .image-wrapper.dual { height: 180px; padding: 1rem 0.75rem 2rem; }
       .image-wrapper.dual .img-cell img { max-height: 100px; }
+      .set-name-badge { font-size: 0.72rem; padding: 0.25rem 0.75rem; bottom: 0.6rem; }
       .legend-bar { gap: 0.35rem; padding: 0.6rem 0.75rem; }
       .legend-item { font-size: 0.6rem; padding: 0.2rem 0.5rem; }
       .swatch-circle { width: 70px; height: 70px; }
+      .info-grid { grid-template-columns: 1fr; gap: 1rem; }
+      .modal-content { max-height: 92vh; }
+      .modal-header { padding: 1rem 1.1rem; }
+      .modal-body { padding: 1.1rem; }
+      .info-column { padding: 1rem; }
     }
 
     @media (max-width: 400px) {
@@ -790,7 +1228,10 @@
       .copy-btn { padding: 0.35rem 0.5rem; font-size: 0.62rem; }
       .image-wrapper { height: 130px; }
       .image-wrapper img { max-height: 100px; }
+      .image-wrapper.dual { height: 160px; padding: 0.85rem 0.6rem 1.75rem; }
       .image-wrapper.dual .img-cell img { max-height: 80px; }
+      .set-name-badge { font-size: 0.65rem; padding: 0.2rem 0.6rem; }
+      .info-column-text { font-size: 0.8rem; }
     }
   </style>
 </head>
@@ -808,9 +1249,11 @@
   </header>
 
   <div class="gender-bar">
-    <span class="gender-bar-label">Gender</span>
     <div class="gender-buttons" role="tablist" id="genderButtons"></div>
-    <span class="gender-bar-count" id="genderCount">—</span>
+    <button class="info-btn" id="infoBtn" type="button" aria-label="Buka info update">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+      <span>Info</span>
+    </button>
   </div>
 
   <div class="legend-bar">
@@ -833,17 +1276,60 @@
     <span id="toastText">Berhasil disalin</span>
   </div>
 
+  <div class="modal-overlay" id="infoModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <span class="modal-title-dot"></span>
+          <span class="modal-title" id="modalTitle">Info Update</span>
+        </div>
+        <button class="modal-close" id="modalClose" aria-label="Tutup">
+          <svg viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="info-grid" id="infoGrid"></div>
+      </div>
+    </div>
+  </div>
+
   <script>
     /* ================================================================
-     *  KONFIGURASI REROLL ITEMS
-     *  ----------------------------------------------------------------
-     *  PENTING:
-     *  - Setiap ITEM memiliki field "image" sendiri (URL preview item).
-     *  - Untuk Uniform, item punya "shirtImage" dan "pantsImage" sendiri.
-     *  - Ini memungkinkan tiap item punya gambar preview yang berbeda.
+     *  1. KONFIGURASI INFO
      * ================================================================ */
+    const INFO_CONFIG = {
+      title: "Info Update",
+      columns: [
+        {
+          key: "male",
+          title: "Male",
+          icon: '<svg viewBox="0 0 24 24"><circle cx="10" cy="14" r="5"/><path d="M19 5l-5.4 5.4"/><path d="M14 5h5v5"/></svg>',
+          new: "yes",
+          text: `Update terbaru untuk Male:
+• Menambahkan beberapa item baru di slot Hair dan Head Accessory.
+• Menyesuaikan rarity beberapa item agar lebih seimbang.
+• Memperbaiki bug pada preview Face Type.
+• Menambahkan variasi warna untuk Skin Color tier Legend.
+Silakan cek kembali daftar item di atas untuk melihat perubahan.`
+        },
+        {
+          key: "female",
+          title: "Female",
+          icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="5"/><path d="M12 14v7"/><path d="M9 18h6"/></svg>',
+          new: "no",
+          text: `Update terbaru untuk Female:
+• Menambahkan set Uniform baru dengan rarity Epic.
+• Memperbarui gambar preview untuk beberapa Hair Accessory.
+• Menambahkan item Face Type tier Legend.
+• Menyesuaikan warna Skin Color agar lebih natural.
+Perubahan berlaku otomatis setelah halaman di-refresh.`
+        }
+      ]
+    };
 
-    /* ---------- ICON SVG (untuk header kategori) ---------- */
+    /* ================================================================
+     *  2. ICON SVG
+     * ================================================================ */
     const ICONS = {
       lastName: '<svg viewBox="0 0 24 24"><path d="M4 6h16"/><path d="M4 12h10"/><path d="M4 18h13"/></svg>',
       role: '<svg viewBox="0 0 24 24"><path d="M12 3l3 6 6 1-4.5 4.5L18 21l-6-3-6 3 1.5-6.5L3 10l6-1z"/></svg>',
@@ -861,10 +1347,6 @@
       back: '<svg viewBox="0 0 24 24"><path d="M8 6h8l2 12H6z"/><path d="M12 6v12"/></svg>'
     };
 
-    /* ---------- PLACEHOLDER GAMBAR ----------
-     *  Ini cuma default. Setiap item di REROLL_DATA di bawah
-     *  bisa punya "image" sendiri (URL-nya beda-beda).
-     * ---------------------------------------------------------------- */
     const PLACEHOLDER = {
       hair:     "https://tr.rbxcdn.com/180DAY-06ac539eca677ade575ef1e9284a0a60/420/420/HairAccessory/Webp/noFilter",
       faceType: "https://tr.rbxcdn.com/30DAY-DynamicHeadCostume-406AAB11E9D737D5CEBD213C443C27AB-Png/420/420/DynamicHeadCostume/Webp/noFilter",
@@ -873,325 +1355,113 @@
       accessory:"https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter"
     };
 
-    /* ---------- DATA ITEM PER GENDER ----------
-     *  Setiap item punya field "image" (URL preview sendiri).
-     *  Kalau "image" tidak diisi, akan fallback ke PLACEHOLDER
-     *  berdasarkan kategori.
-     * ---------------------------------------------------------------- */
+    /* ================================================================
+     *  3. DATA ITEM
+     * ================================================================ */
     const REROLL_DATA = {
-      pria: [
-        /* ============ IDENTITY ============ */
-        {
-          group: "Identity", type: "grouped", id: "lastName",
-          title: "Last Name", subtitle: "Nama Belakang", icon: "lastName",
-          tiers: {
-            common:   { names: ["", "Johnson", "Williams"] },
-            uncommon: { names: ["Brown", "Jones", "Garcia"] },
-            epic:     { names: ["Miller", "Davis"] },
-            legend:   { names: ["Rodriguez", "Martinez"] },
-            unknown:  { names: ["Void"] }
-          }
-        },
-        {
-          group: "Identity", type: "grouped", id: "role",
-          title: "Role", subtitle: "Jurusan / Role", icon: "role",
-          tiers: {
-            common:   { names: ["", "TPM", "TSM", "TBSM", "TITL", "Bisnis Digital", "Manajemen Perkantoran", "Akuntansi"] },
-            uncommon: { names: ["DKV", "TBSM", "TEI", "FARMASI", "Animasi", "Desain Produk", "Teknik Pengelasan"] },
-            epic:     { names: ["MEKATRONIKA", "TATA BOGA", "MULTIMEDIA", "Teknik Otomasi Industri", "Teknik Instrumentasi Industri"] },
-            legend:   { names: ["PENERBANGAN", "CYBER SECURITY", "Teknik Pesawat Udara", "Teknik Kendaraan Ringan Otomotif", "Teknik Elektronika Daya", "Teknik Rekayasa Perangkat Lunak"] },
-            unknown:  { names: ["TEKNOLOGI NANO", "Teknik Kedirgantaraan", "Rekayasa Kecerdasan Artifisial", "Robotika", "Teknologi Pangan", "Bioteknologi"] }
-          }
-        },
+      male: [
+        { group: "Identity", type: "grouped", id: "lastName", title: "Last Name", subtitle: "Nama Belakang", icon: "lastName",
+          tiers: { common: { names: ["", "Johnson", "Williams"] }, uncommon: { names: ["Brown", "Jones", "Garcia"] }, epic: { names: ["Miller", "Davis"] }, legend: { names: ["Rodriguez", "Martinez"] }, unknown: { names: ["Void"] } } },
+        { group: "Identity", type: "grouped", id: "role", title: "Role", subtitle: "Jurusan / Role", icon: "role",
+          tiers: { common: { names: ["", "TPM", "TSM", "TBSM", "TITL", "Bisnis Digital", "Manajemen Perkantoran", "Akuntansi"] }, uncommon: { names: ["DKV", "TBSM", "TEI", "FARMASI", "Animasi", "Desain Produk", "Teknik Pengelasan"] }, epic: { names: ["MEKATRONIKA", "TATA BOGA", "MULTIMEDIA", "Teknik Otomasi Industri", "Teknik Instrumentasi Industri"] }, legend: { names: ["PENERBANGAN", "CYBER SECURITY", "Teknik Pesawat Udara", "Teknik Kendaraan Ringan Otomotif", "Teknik Elektronika Daya", "Teknik Rekayasa Perangkat Lunak"] }, unknown: { names: ["TEKNOLOGI NANO", "Teknik Kedirgantaraan", "Rekayasa Kecerdasan Artifisial", "Robotika", "Teknologi Pangan", "Bioteknologi"] } } },
 
-        /* ============ APPEARANCE ============ */
-        {
-          group: "Appearance", type: "grouped", id: "height",
-          title: "Height", subtitle: "Tinggi Badan (cm)", icon: "height",
-          tiers: {
-            common:   { names: ["130 – 140", "140 – 150"] },
-            uncommon: { names: ["150 – 160", "120 – 130"] },
-            epic:     { names: ["160 – 170", "110 – 120"] },
-            legend:   { names: ["170 – 185", "100 – 110"] },
-            unknown:  { names: ["90 – 100", "185 – 220"] }
-          }
-        },
-        {
-          group: "Appearance", type: "color", id: "skinColor",
-          title: "Skin Color", subtitle: "Warna Kulit (RGB)", icon: "skinColor",
-          tiers: {
-            common:   { value: "255.204.153" },
-            uncommon: { value: "124.78.50" },
-            epic:     { value: "120.80.200" },
-            legend:   { value: "255.215.0" },
-            unknown:  { value: "0.0.0" }
-          }
-        },
-        {
-          group: "Appearance", type: "item", id: "hair",
-          title: "Hair", subtitle: "Model Rambut", icon: "hair",
-          placeholder: "hair",  /* untuk fallback kalau item tidak punya image */
+        { group: "Appearance", type: "grouped", id: "height", title: "Height", subtitle: "Tinggi Badan (cm)", icon: "height",
+          tiers: { common: { names: ["130 – 140", "140 – 150"] }, uncommon: { names: ["150 – 160", "120 – 130"] }, epic: { names: ["160 – 170", "110 – 120"] }, legend: { names: ["170 – 185", "100 – 110"] }, unknown: { names: ["90 – 100", "185 – 220"] } } },
+        { group: "Appearance", type: "color", id: "skinColor", title: "Skin Color", subtitle: "Warna Kulit (RGB)", icon: "skinColor",
+          tiers: { common: { value: "255.204.153" }, uncommon: { value: "124.78.50" }, epic: { value: "120.80.200" }, legend: { value: "255.215.0" }, unknown: { value: "0.0.0" } } },
+        { group: "Appearance", type: "item", id: "hair", title: "Hair", subtitle: "Model Rambut", icon: "hair", placeholder: "hair",
           items: [
-            { rarity: "common",   id: "98528599025378",  image: "https://tr.rbxcdn.com/180DAY-06ac539eca677ade575ef1e9284a0a60/420/420/HairAccessory/Webp/noFilter" },
-            { rarity: "uncommon", id: "135506916870785", image: "https://tr.rbxcdn.com/180DAY-06ac539eca677ade575ef1e9284a0a60/420/420/HairAccessory/Webp/noFilter" },
-            { rarity: "epic",     id: "110619246329276", image: "https://tr.rbxcdn.com/180DAY-06ac539eca677ade575ef1e9284a0a60/420/420/HairAccessory/Webp/noFilter" },
-            { rarity: "epic",     id: "110619246329276", image: "https://tr.rbxcdn.com/180DAY-06ac539eca677ade575ef1e9284a0a60/420/420/HairAccessory/Webp/noFilter" },
-            { rarity: "unknown",  id: "12",              image: "https://tr.rbxcdn.com/180DAY-06ac539eca677ade575ef1e9284a0a60/420/420/HairAccessory/Webp/noFilter" }
-          ]
-        },
-        {
-          group: "Appearance", type: "color", id: "hairColor",
-          title: "Hair Color", subtitle: "Warna Rambut (RGB)", icon: "hairColor",
-          tiers: {
-            common:   { value: "85.56.102" },
-            uncommon: { value: "200.120.80" },
-            epic:     { value: "150.80.200" },
-            legend:   { value: "255.215.0" },
-            unknown:  { value: "255.0.0" }
-          }
-        },
-        {
-          group: "Appearance", type: "item", id: "faceType",
-          title: "Face Type", subtitle: "Tipe Wajah", icon: "faceType",
-          placeholder: "faceType",
+            { rarity: "common",   id: "98528599025378",  image: PLACEHOLDER.hair },
+            { rarity: "uncommon", id: "135506916870785", image: PLACEHOLDER.hair },
+            { rarity: "epic",     id: "110619246329276", image: PLACEHOLDER.hair },
+            { rarity: "unknown",  id: "12",              image: PLACEHOLDER.hair }
+          ] },
+        { group: "Appearance", type: "color", id: "hairColor", title: "Hair Color", subtitle: "Warna Rambut (RGB)", icon: "hairColor",
+          tiers: { common: { value: "85.56.102" }, uncommon: { value: "200.120.80" }, epic: { value: "150.80.200" }, legend: { value: "255.215.0" }, unknown: { value: "255.0.0" } } },
+        { group: "Appearance", type: "item", id: "faceType", title: "Face Type", subtitle: "Tipe Wajah", icon: "faceType", placeholder: "faceType",
           items: [
-            { rarity: "common",  id: "110496664617589", image: "https://tr.rbxcdn.com/30DAY-DynamicHeadCostume-406AAB11E9D737D5CEBD213C443C27AB-Png/420/420/DynamicHeadCostume/Webp/noFilter" },
-            { rarity: "epic",    id: "188976304927401", image: "https://tr.rbxcdn.com/30DAY-DynamicHeadCostume-406AAB11E9D737D5CEBD213C443C27AB-Png/420/420/DynamicHeadCostume/Webp/noFilter" },
-            { rarity: "legend",  id: "186755253423235", image: "https://tr.rbxcdn.com/30DAY-DynamicHeadCostume-406AAB11E9D737D5CEBD213C443C27AB-Png/420/420/DynamicHeadCostume/Webp/noFilter" },
-            { rarity: "unknown", id: "273360413038359", image: "https://tr.rbxcdn.com/30DAY-DynamicHeadCostume-406AAB11E9D737D5CEBD213C443C27AB-Png/420/420/DynamicHeadCostume/Webp/noFilter" }
-          ]
-        },
-        {
-          group: "Appearance", type: "uniform", id: "uniform",
-          title: "Uniform", subtitle: "Shirt + Pants (Satu Set)", icon: "uniform",
-          placeholder: { shirt: "shirt", pants: "pants" },
+            { rarity: "common",  id: "110496664617589", image: PLACEHOLDER.faceType },
+            { rarity: "epic",    id: "188976304927401", image: PLACEHOLDER.faceType },
+            { rarity: "legend",  id: "186755253423235", image: PLACEHOLDER.faceType },
+            { rarity: "unknown", id: "273360413038359", image: PLACEHOLDER.faceType }
+          ] },
+        { group: "Appearance", type: "uniform", id: "uniform", title: "Uniform", subtitle: "Shirt + Pants (Satu Set)", icon: "uniform", placeholder: { shirt: "shirt", pants: "pants" },
           items: [
-            {
-              rarity: "common",
-              name: "Recruit Set",
-              shirt: { name: "Recruit Set", id: "16810410386", image: "https://tr.rbxcdn.com/180DAY-acad9c2049b0a435449e779028ceed86/420/420/Shirt/Webp/noFilter" },
-              pants: { name: "Recruit Set", id: "8854324984",  image: "https://tr.rbxcdn.com/180DAY-a197bc8f6f2a5f6dd5b089572a402f46/420/420/Pants/Webp/noFilter" }
-            }
-          ]
-        },
+            { rarity: "common", name: "Recruit Set",
+              shirt: { id: "16810410386", image: PLACEHOLDER.shirt },
+              pants: { id: "8854324984",  image: PLACEHOLDER.pants } }
+          ] },
 
-        /* ============ ACCESSORIES ============ */
-        {
-          group: "Accessories", type: "item", id: "headAcc",
-          title: "Head Aksesoris", subtitle: "Aksesoris Kepala", icon: "head",
-          placeholder: "accessory",
-          items: [
-            { rarity: "common",   id: "12092086350", image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" },
-            { rarity: "uncommon", id: "6001",        image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" }
-          ]
-        },
-        {
-          group: "Accessories", type: "item", id: "faceAcc",
-          title: "Face Aksesoris", subtitle: "Aksesoris Wajah", icon: "face",
-          placeholder: "accessory",
-          items: [
-            { rarity: "common",   id: "17165131496", image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" },
-            { rarity: "uncommon", id: "1201",        image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" }
-          ]
-        },
-        {
-          group: "Accessories", type: "item", id: "neckAcc",
-          title: "Neck Aksesoris", subtitle: "Aksesoris Leher", icon: "neck",
-          placeholder: "accessory",
-          items: [
-            { rarity: "common",   id: "138149169311809", image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" },
-            { rarity: "uncommon", id: "2201",            image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" }
-          ]
-        },
-        {
-          group: "Accessories", type: "item", id: "armAcc",
-          title: "Arm Aksesoris", subtitle: "Aksesoris Lengan", icon: "arm",
-          placeholder: "accessory",
-          items: [
-            { rarity: "common",   id: "79870665394807", image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" },
-            { rarity: "uncommon", id: "3201",           image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" }
-          ]
-        },
-        {
-          group: "Accessories", type: "item", id: "waistAcc",
-          title: "Waist Aksesoris", subtitle: "Aksesoris Pinggang", icon: "waist",
-          placeholder: "accessory",
-          items: [
-            { rarity: "common",   id: "106356059591579", image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" },
-            { rarity: "uncommon", id: "5201",            image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" }
-          ]
-        },
-        {
-          group: "Accessories", type: "item", id: "backAcc",
-          title: "Back Aksesoris", subtitle: "Aksesoris Punggung", icon: "back",
-          placeholder: "accessory",
-          items: [
-            { rarity: "common",   id: "103486592724790", image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" },
-            { rarity: "uncommon", id: "4201",            image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" }
-          ]
-        }
+        { group: "Accessories", type: "item", id: "headAcc", title: "Head Aksesoris", subtitle: "Aksesoris Kepala", icon: "head", placeholder: "accessory",
+          items: [ { rarity: "common", id: "12092086350", image: PLACEHOLDER.accessory }, { rarity: "uncommon", id: "6001", image: PLACEHOLDER.accessory } ] },
+        { group: "Accessories", type: "item", id: "faceAcc", title: "Face Aksesoris", subtitle: "Aksesoris Wajah", icon: "face", placeholder: "accessory",
+          items: [ { rarity: "common", id: "17165131496", image: PLACEHOLDER.accessory }, { rarity: "uncommon", id: "1201", image: PLACEHOLDER.accessory } ] },
+        { group: "Accessories", type: "item", id: "neckAcc", title: "Neck Aksesoris", subtitle: "Aksesoris Leher", icon: "neck", placeholder: "accessory",
+          items: [ { rarity: "common", id: "138149169311809", image: PLACEHOLDER.accessory }, { rarity: "uncommon", id: "2201", image: PLACEHOLDER.accessory } ] },
+        { group: "Accessories", type: "item", id: "armAcc", title: "Arm Aksesoris", subtitle: "Aksesoris Lengan", icon: "arm", placeholder: "accessory",
+          items: [ { rarity: "common", id: "79870665394807", image: PLACEHOLDER.accessory }, { rarity: "uncommon", id: "3201", image: PLACEHOLDER.accessory } ] },
+        { group: "Accessories", type: "item", id: "waistAcc", title: "Waist Aksesoris", subtitle: "Aksesoris Pinggang", icon: "waist", placeholder: "accessory",
+          items: [ { rarity: "common", id: "106356059591579", image: PLACEHOLDER.accessory }, { rarity: "uncommon", id: "5201", image: PLACEHOLDER.accessory } ] },
+        { group: "Accessories", type: "item", id: "backAcc", title: "Back Aksesoris", subtitle: "Aksesoris Punggung", icon: "back", placeholder: "accessory",
+          items: [ { rarity: "common", id: "103486592724790", image: PLACEHOLDER.accessory }, { rarity: "uncommon", id: "4201", image: PLACEHOLDER.accessory } ] }
       ],
 
-      wanita: [
-        /* ============ IDENTITY ============ */
-        {
-          group: "Identity", type: "grouped", id: "lastName",
-          title: "Last Name", subtitle: "Nama Belakang", icon: "lastName",
-          tiers: {
-            common:   { names: ["Smith", "son", "Williams"] },
-            uncommon: { names: ["Taylor", "Anderson", "Thomas"] },
-            epic:     { names: ["Jackson", "White"] },
-            legend:   { names: ["Harris", "Martin"] },
-            unknown:  { names: ["Nyx"] }
-          }
-        },
-        {
-          group: "Identity", type: "grouped", id: "role",
-          title: "Role", subtitle: "Jurusan / Role", icon: "role",
-          tiers: {
-            common:   { names: ["", "TPM", "TSM", "TBSM", "TITL", "Bisnis Digital", "Manajemen Perkantoran", "Akuntansi"] },
-            uncommon: { names: ["DKV", "TBSM", "TEI", "FARMASI", "Animasi", "Desain Produk", "Teknik Pengelasan"] },
-            epic:     { names: ["MEKATRONIKA", "TATA BOGA", "MULTIMEDIA", "Teknik Otomasi Industri", "Teknik Instrumentasi Industri"] },
-            legend:   { names: ["PENERBANGAN", "CYBER SECURITY", "Teknik Pesawat Udara", "Teknik Kendaraan Ringan Otomotif", "Teknik Elektronika Daya", "Teknik Rekayasa Perangkat Lunak"] },
-            unknown:  { names: ["TEKNOLOGI NANO", "Teknik Kedirgantaraan", "Rekayasa Kecerdasan Artifisial", "Robotika", "Teknologi Pangan", "Bioteknologi"] }
-          }
-        },
+      female: [
+        { group: "Identity", type: "grouped", id: "lastName", title: "Last Name", subtitle: "Nama Belakang", icon: "lastName",
+          tiers: { common: { names: ["Smith", "son", "Williams"] }, uncommon: { names: ["Taylor", "Anderson", "Thomas"] }, epic: { names: ["Jackson", "White"] }, legend: { names: ["Harris", "Martin"] }, unknown: { names: ["Nyx"] } } },
+        { group: "Identity", type: "grouped", id: "role", title: "Role", subtitle: "Jurusan / Role", icon: "role",
+          tiers: { common: { names: ["", "TPM", "TSM", "TBSM", "TITL", "Bisnis Digital", "Manajemen Perkantoran", "Akuntansi"] }, uncommon: { names: ["DKV", "TBSM", "TEI", "FARMASI", "Animasi", "Desain Produk", "Teknik Pengelasan"] }, epic: { names: ["MEKATRONIKA", "TATA BOGA", "MULTIMEDIA", "Teknik Otomasi Industri", "Teknik Instrumentasi Industri"] }, legend: { names: ["PENERBANGAN", "CYBER SECURITY", "Teknik Pesawat Udara", "Teknik Kendaraan Ringan Otomotif", "Teknik Elektronika Daya", "Teknik Rekayasa Perangkat Lunak"] }, unknown: { names: ["TEKNOLOGI NANO", "Teknik Kedirgantaraan", "Rekayasa Kecerdasan Artifisial", "Robotika", "Teknologi Pangan", "Bioteknologi"] } } },
 
-        /* ============ APPEARANCE ============ */
-        {
-          group: "Appearance", type: "grouped", id: "height",
-          title: "Height", subtitle: "Tinggi Badan (cm)", icon: "height",
-          tiers: {
-            common:   { names: ["130 – 140", "140 – 150"] },
-            uncommon: { names: ["150 – 160", "120 – 130"] },
-            epic:     { names: ["160 – 170", "110 – 120"] },
-            legend:   { names: ["170 – 185", "100 – 110"] },
-            unknown:  { names: ["90 – 100", "185 – 220"] }
-          }
-        },
-        {
-          group: "Appearance", type: "color", id: "skinColor",
-          title: "Skin Color", subtitle: "Warna Kulit (RGB)", icon: "skinColor",
-          tiers: {
-            common:   { value: "255.204.153" },
-            uncommon: { value: "124.78.50" },
-            epic:     { value: "120.80.200" },
-            legend:   { value: "255.215.0" },
-            unknown:  { value: "0.255.255" }
-          }
-        },
-        {
-          group: "Appearance", type: "item", id: "hair",
-          title: "Hair", subtitle: "Model Rambut", icon: "hair",
-          placeholder: "hair",
+        { group: "Appearance", type: "grouped", id: "height", title: "Height", subtitle: "Tinggi Badan (cm)", icon: "height",
+          tiers: { common: { names: ["130 – 140", "140 – 150"] }, uncommon: { names: ["150 – 160", "120 – 130"] }, epic: { names: ["160 – 170", "110 – 120"] }, legend: { names: ["170 – 185", "100 – 110"] }, unknown: { names: ["90 – 100", "185 – 220"] } } },
+        { group: "Appearance", type: "color", id: "skinColor", title: "Skin Color", subtitle: "Warna Kulit (RGB)", icon: "skinColor",
+          tiers: { common: { value: "255.204.153" }, uncommon: { value: "124.78.50" }, epic: { value: "120.80.200" }, legend: { value: "255.215.0" }, unknown: { value: "0.255.255" } } },
+        { group: "Appearance", type: "item", id: "hair", title: "Hair", subtitle: "Model Rambut", icon: "hair", placeholder: "hair",
           items: [
-            { rarity: "common",   id: "0",              image: "https://tr.rbxcdn.com/180DAY-06ac539eca677ade575ef1e9284a0a60/420/420/HairAccessory/Webp/noFilter" },
-            { rarity: "uncommon", id: "15219402962",    image: "https://tr.rbxcdn.com/180DAY-06ac539eca677ade575ef1e9284a0a60/420/420/HairAccessory/Webp/noFilter" },
-            { rarity: "epic",     id: "128817841068722",image: "https://tr.rbxcdn.com/180DAY-06ac539eca677ade575ef1e9284a0a60/420/420/HairAccessory/Webp/noFilter" },
-            { rarity: "unknown",  id: "25",             image: "https://tr.rbxcdn.com/180DAY-06ac539eca677ade575ef1e9284a0a60/420/420/HairAccessory/Webp/noFilter" }
-          ]
-        },
-        {
-          group: "Appearance", type: "color", id: "hairColor",
-          title: "Hair Color", subtitle: "Warna Rambut (RGB)", icon: "hairColor",
-          tiers: {
-            common:   { value: "85.56.102" },
-            uncommon: { value: "200.120.80" },
-            epic:     { value: "150.80.200" },
-            legend:   { value: "255.215.0" },
-            unknown:  { value: "255.0.0" }
-          }
-        },
-        {
-          group: "Appearance", type: "item", id: "faceType",
-          title: "Face Type", subtitle: "Tipe Wajah", icon: "faceType",
-          placeholder: "faceType",
+            { rarity: "common",   id: "0",              image: PLACEHOLDER.hair },
+            { rarity: "uncommon", id: "15219402962",    image: PLACEHOLDER.hair },
+            { rarity: "epic",     id: "128817841068722",image: PLACEHOLDER.hair },
+            { rarity: "unknown",  id: "25",             image: PLACEHOLDER.hair }
+          ] },
+        { group: "Appearance", type: "color", id: "hairColor", title: "Hair Color", subtitle: "Warna Rambut (RGB)", icon: "hairColor",
+          tiers: { common: { value: "85.56.102" }, uncommon: { value: "200.120.80" }, epic: { value: "150.80.200" }, legend: { value: "255.215.0" }, unknown: { value: "255.0.0" } } },
+        { group: "Appearance", type: "item", id: "faceType", title: "Face Type", subtitle: "Tipe Wajah", icon: "faceType", placeholder: "faceType",
           items: [
-            { rarity: "common",  id: "157757222154606", image: "https://tr.rbxcdn.com/30DAY-DynamicHeadCostume-406AAB11E9D737D5CEBD213C443C27AB-Png/420/420/DynamicHeadCostume/Webp/noFilter" },
-            { rarity: "epic",    id: "258523744380054", image: "https://tr.rbxcdn.com/30DAY-DynamicHeadCostume-406AAB11E9D737D5CEBD213C443C27AB-Png/420/420/DynamicHeadCostume/Webp/noFilter" },
-            { rarity: "legend",  id: "132921897850212", image: "https://tr.rbxcdn.com/30DAY-DynamicHeadCostume-406AAB11E9D737D5CEBD213C443C27AB-Png/420/420/DynamicHeadCostume/Webp/noFilter" },
-            { rarity: "unknown", id: "273360413038359", image: "https://tr.rbxcdn.com/30DAY-DynamicHeadCostume-406AAB11E9D737D5CEBD213C443C27AB-Png/420/420/DynamicHeadCostume/Webp/noFilter" }
-          ]
-        },
-        {
-          group: "Appearance", type: "uniform", id: "uniform",
-          title: "Uniform", subtitle: "Shirt + Pants (Satu Set)", icon: "uniform",
-          placeholder: { shirt: "shirt", pants: "pants" },
+            { rarity: "common",  id: "157757222154606", image: PLACEHOLDER.faceType },
+            { rarity: "epic",    id: "258523744380054", image: PLACEHOLDER.faceType },
+            { rarity: "legend",  id: "132921897850212", image: PLACEHOLDER.faceType },
+            { rarity: "unknown", id: "273360413038359", image: PLACEHOLDER.faceType }
+          ] },
+        { group: "Appearance", type: "uniform", id: "uniform", title: "Uniform", subtitle: "Shirt + Pants (Satu Set)", icon: "uniform", placeholder: { shirt: "shirt", pants: "pants" },
           items: [
-            {
-              rarity: "common",
-              name: "Scout Set",
-              shirt: { name: "Scout Set", id: "1006", image: "https://tr.rbxcdn.com/180DAY-acad9c2049b0a435449e779028ceed86/420/420/Shirt/Webp/noFilter" },
-              pants: { name: "Scout Set", id: "2006", image: "https://tr.rbxcdn.com/180DAY-a197bc8f6f2a5f6dd5b089572a402f46/420/420/Pants/Webp/noFilter" }
-            }
-          ]
-        },
+            { rarity: "common", name: "Scout Set",
+              shirt: { id: "1006", image: PLACEHOLDER.shirt },
+              pants: { id: "2006", image: PLACEHOLDER.pants } }
+          ] },
 
-        /* ============ ACCESSORIES ============ */
-        {
-          group: "Accessories", type: "item", id: "headAcc",
-          title: "Head Aksesoris", subtitle: "Aksesoris Kepala", icon: "head",
-          placeholder: "accessory",
-          items: [
-            { rarity: "common",   id: "12092086350", image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" },
-            { rarity: "uncommon", id: "6002",        image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" }
-          ]
-        },
-        {
-          group: "Accessories", type: "item", id: "faceAcc",
-          title: "Face Aksesoris", subtitle: "Aksesoris Wajah", icon: "face",
-          placeholder: "accessory",
-          items: [
-            { rarity: "common",   id: "17165131496", image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" },
-            { rarity: "uncommon", id: "1202",        image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" }
-          ]
-        },
-        {
-          group: "Accessories", type: "item", id: "neckAcc",
-          title: "Neck Aksesoris", subtitle: "Aksesoris Leher", icon: "neck",
-          placeholder: "accessory",
-          items: [
-            { rarity: "common",   id: "138149169311809", image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" },
-            { rarity: "uncommon", id: "2202",            image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" }
-          ]
-        },
-        {
-          group: "Accessories", type: "item", id: "armAcc",
-          title: "Arm Aksesoris", subtitle: "Aksesoris Lengan", icon: "arm",
-          placeholder: "accessory",
-          items: [
-            { rarity: "common",   id: "79870665394807", image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" },
-            { rarity: "uncommon", id: "3202",           image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" }
-          ]
-        },
-        {
-          group: "Accessories", type: "item", id: "waistAcc",
-          title: "Waist Aksesoris", subtitle: "Aksesoris Pinggang", icon: "waist",
-          placeholder: "accessory",
-          items: [
-            { rarity: "common",   id: "5103", image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" },
-            { rarity: "uncommon", id: "5202", image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" }
-          ]
-        },
-        {
-          group: "Accessories", type: "item", id: "backAcc",
-          title: "Back Aksesoris", subtitle: "Aksesoris Punggung", icon: "back",
-          placeholder: "accessory",
-          items: [
-            { rarity: "common",   id: "103486592724790", image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" },
-            { rarity: "uncommon", id: "4202",            image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" }
-          ]
-        }
+        { group: "Accessories", type: "item", id: "headAcc", title: "Head Aksesoris", subtitle: "Aksesoris Kepala", icon: "head", placeholder: "accessory",
+          items: [ { rarity: "common", id: "12092086350", image: PLACEHOLDER.accessory }, { rarity: "uncommon", id: "6002", image: PLACEHOLDER.accessory } ] },
+        { group: "Accessories", type: "item", id: "faceAcc", title: "Face Aksesoris", subtitle: "Aksesoris Wajah", icon: "face", placeholder: "accessory",
+          items: [ { rarity: "common", id: "17165131496", image: PLACEHOLDER.accessory }, { rarity: "uncommon", id: "1202", image: PLACEHOLDER.accessory } ] },
+        { group: "Accessories", type: "item", id: "neckAcc", title: "Neck Aksesoris", subtitle: "Aksesoris Leher", icon: "neck", placeholder: "accessory",
+          items: [ { rarity: "common", id: "138149169311809", image: PLACEHOLDER.accessory }, { rarity: "uncommon", id: "2202", image: PLACEHOLDER.accessory } ] },
+        { group: "Accessories", type: "item", id: "armAcc", title: "Arm Aksesoris", subtitle: "Aksesoris Lengan", icon: "arm", placeholder: "accessory",
+          items: [ { rarity: "common", id: "79870665394807", image: PLACEHOLDER.accessory }, { rarity: "uncommon", id: "3202", image: PLACEHOLDER.accessory } ] },
+        { group: "Accessories", type: "item", id: "waistAcc", title: "Waist Aksesoris", subtitle: "Aksesoris Pinggang", icon: "waist", placeholder: "accessory",
+          items: [ { rarity: "common", id: "5103", image: PLACEHOLDER.accessory }, { rarity: "uncommon", id: "5202", image: PLACEHOLDER.accessory } ] },
+        { group: "Accessories", type: "item", id: "backAcc", title: "Back Aksesoris", subtitle: "Aksesoris Punggung", icon: "back", placeholder: "accessory",
+          items: [ { rarity: "common", id: "103486592724790", image: PLACEHOLDER.accessory }, { rarity: "uncommon", id: "4202", image: PLACEHOLDER.accessory } ] }
       ]
     };
 
     /* ================================================================
      *  RENDER ENGINE
      * ================================================================ */
-
-    const TIER_LABEL = {
-      common: "Common", uncommon: "Uncommon", epic: "Epic",
-      legend: "Legend", unknown: "???"
+    const TIER_LABEL = { common: "Common", uncommon: "Uncommon", epic: "Epic", legend: "Legend", unknown: "???" };
+    const GENDER_LABELS = { male: "Male", female: "Female" };
+    const GENDER_ICONS = {
+      male: '<svg viewBox="0 0 24 24"><circle cx="10" cy="14" r="5"/><path d="M19 5l-5.4 5.4"/><path d="M14 5h5v5"/></svg>',
+      female: '<svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="5"/><path d="M12 14v7"/><path d="M9 18h6"/></svg>'
     };
 
     function rgbPreview(rgbStr) {
@@ -1200,7 +1470,6 @@
       return `rgb(${p[0]},${p[1]},${p[2]})`;
     }
 
-    /* Ambil URL gambar item — prioritas: item.image → placeholder kategori */
     function resolveImage(item, section, slot) {
       if (item && item.image) return item.image;
       if (section && section.placeholder) {
@@ -1212,18 +1481,15 @@
     }
 
     const COPY_ICON = '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
-
     function copyBtn(value, mini = false) {
       const safe = String(value).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
       return `<button class="copy-btn${mini ? ' mini' : ''}" data-copy="${safe}">${COPY_ICON}${mini ? '' : 'Salin'}</button>`;
     }
 
-    /* -------- Grouped card -------- */
     function renderGroupedCard(section) {
       const tierOrder = ["common", "uncommon", "epic", "legend", "unknown"];
       return tierOrder.filter(t => section.tiers[t]).map(tier => {
-        const tierData = section.tiers[tier];
-        const names = (tierData.names || []).map(n =>
+        const names = (section.tiers[tier].names || []).map(n =>
           n === "" ? `<span class="chip muted">(kosong)</span>` : `<span class="chip">${n}</span>`
         ).join("");
         return `
@@ -1233,12 +1499,10 @@
               <span class="rarity-badge ${tier}">${TIER_LABEL[tier]}</span>
             </div>
             <div class="grouped-card-list">${names}</div>
-          </div>
-        `;
+          </div>`;
       }).join("");
     }
 
-    /* -------- Color card -------- */
     function renderColorCard(section) {
       const tierOrder = ["common", "uncommon", "epic", "legend", "unknown"];
       return tierOrder.filter(t => section.tiers[t]).map(tier => {
@@ -1255,12 +1519,10 @@
                 ${copyBtn(value)}
               </div>
             </div>
-          </article>
-        `;
+          </article>`;
       }).join("");
     }
 
-    /* -------- Item card (Hair / Face Type / Accessories) -------- */
     function renderItemCard(section) {
       return section.items.map(it => {
         const img = resolveImage(it, section);
@@ -1276,12 +1538,11 @@
                 ${copyBtn(it.id)}
               </div>
             </div>
-          </article>
-        `;
+          </article>`;
       }).join("");
     }
 
-    /* -------- Uniform card -------- */
+    // Uniform: nama set di tengah gambar, ID saja di bawah (Shirt & Pants)
     function renderUniformCard(section) {
       return section.items.map(it => {
         const shirtImg = resolveImage(it.shirt, section, "shirt");
@@ -1289,63 +1550,56 @@
         return `
           <article class="card" data-rarity="${it.rarity}">
             <div class="image-wrapper dual">
-              <span class="slot-badge">Set</span>
               <span class="rarity-badge float ${it.rarity}">${TIER_LABEL[it.rarity]}</span>
               <div class="img-cell">
                 <span class="slot-badge mini">Shirt</span>
-                <img src="${shirtImg}" alt="${it.shirt.name} Shirt" loading="lazy">
+                <img src="${shirtImg}" alt="Shirt ${it.name}" loading="lazy">
               </div>
               <div class="img-cell">
                 <span class="slot-badge mini">Pants</span>
-                <img src="${pantsImg}" alt="${it.pants.name} Pants" loading="lazy">
+                <img src="${pantsImg}" alt="Pants ${it.name}" loading="lazy">
               </div>
+              <span class="set-name-badge">${it.name}</span>
             </div>
             <div class="card-content">
               <div class="id-list">
                 <div class="id-item">
-                  <div class="id-item-head"><span class="dot"></span>Shirt · ${it.name}</div>
+                  <div class="id-item-head"><span class="dot"></span>Shirt</div>
                   <div class="id-item-body">
-                    <span class="name">${it.shirt.name}</span>
                     <span class="id-text">${it.shirt.id}</span>
                     ${copyBtn(it.shirt.id, true)}
                   </div>
                 </div>
                 <div class="id-item">
-                  <div class="id-item-head"><span class="dot"></span>Pants · ${it.name}</div>
+                  <div class="id-item-head"><span class="dot"></span>Pants</div>
                   <div class="id-item-body">
-                    <span class="name">${it.pants.name}</span>
                     <span class="id-text">${it.pants.id}</span>
                     ${copyBtn(it.pants.id, true)}
                   </div>
                 </div>
               </div>
             </div>
-          </article>
-        `;
+          </article>`;
       }).join("");
     }
 
-    /* -------- Render section -------- */
     function renderSection(section) {
       let gridContent, countLabel, gridClass = "grid-container";
-
       if (section.type === "grouped") {
         gridContent = renderGroupedCard(section);
         gridClass += " wide";
-        const tiersCount = Object.keys(section.tiers).length;
-        const totalNames = Object.values(section.tiers)
-          .reduce((sum, t) => sum + (t.names ? t.names.length : 0), 0);
-        countLabel = `${tiersCount} tier · ${totalNames} item`;
+        const totalNames = Object.values(section.tiers).reduce((sum, t) => sum + (t.names ? t.names.length : 0), 0);
+        countLabel = `${totalNames} items`;
       } else if (section.type === "color") {
         gridContent = renderColorCard(section);
-        countLabel = `${Object.keys(section.tiers).length} item`;
+        countLabel = `${Object.keys(section.tiers).length} items`;
       } else if (section.type === "uniform") {
         gridContent = renderUniformCard(section);
         gridClass += " wide";
         countLabel = `${section.items.length} set`;
       } else {
         gridContent = renderItemCard(section);
-        countLabel = `${section.items.length} item`;
+        countLabel = `${section.items.length} items`;
       }
 
       return `
@@ -1361,22 +1615,16 @@
             <span class="category-count">${countLabel}</span>
           </div>
           <div class="${gridClass}">${gridContent}</div>
-        </section>
-      `;
+        </section>`;
     }
 
-    /* -------- Render panel per gender -------- */
     function renderPanel(genderKey, sections, isActive) {
       const groups = [];
       const groupMap = {};
       sections.forEach(s => {
-        if (!groupMap[s.group]) {
-          groupMap[s.group] = [];
-          groups.push(s.group);
-        }
+        if (!groupMap[s.group]) { groupMap[s.group] = []; groups.push(s.group); }
         groupMap[s.group].push(s);
       });
-
       const html = groups.map(groupName => {
         const items = groupMap[groupName].map(renderSection).join("");
         return `
@@ -1386,33 +1634,74 @@
               <span class="group-label-line"></span>
             </div>
             ${items}
-          </div>
-        `;
+          </div>`;
       }).join("");
-
       return `<div class="view-panel${isActive ? " active" : ""}" id="panel-${genderKey}" data-gender="${genderKey}">${html}</div>`;
     }
 
-    /* -------- Init -------- */
-    function init() {
-      const genderLabels = { pria: "Pria", wanita: "Wanita" };
-      const genderIcons = {
-        pria: '<svg viewBox="0 0 24 24"><circle cx="10" cy="14" r="5"/><path d="M19 5l-5.4 5.4"/><path d="M14 5h5v5"/></svg>',
-        wanita: '<svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="5"/><path d="M12 14v7"/><path d="M9 18h6"/></svg>'
-      };
+    /* ================================================================
+     *  INFO MODAL
+     * ================================================================ */
+    function renderInfoModal() {
+      const grid = document.getElementById("infoGrid");
+      const title = document.getElementById("modalTitle");
+      title.textContent = INFO_CONFIG.title || "Info";
 
+      grid.innerHTML = INFO_CONFIG.columns.map(col => {
+        const isNew = String(col.new || "").toLowerCase() === "yes";
+        const gender = col.key || "";
+        const badge = isNew ? `<span class="info-new-badge">New</span>` : "";
+        return `
+          <div class="info-column ${isNew ? 'is-new' : ''}" data-gender="${gender}">
+            <div class="info-column-header">
+              <span class="info-column-icon">${col.icon || ""}</span>
+              <span class="info-column-title">${col.title || col.key}</span>
+              ${badge}
+            </div>
+            <div class="info-column-text">${(col.text || "").replace(/</g, "&lt;")}</div>
+          </div>`;
+      }).join("");
+    }
+
+    function updateInfoButtonState() {
+      const btn = document.getElementById("infoBtn");
+      const hasNew = INFO_CONFIG.columns.some(c => String(c.new || "").toLowerCase() === "yes");
+      btn.classList.toggle("has-new", hasNew);
+    }
+
+    function openInfoModal() {
+      renderInfoModal();
+      const modal = document.getElementById("infoModal");
+      modal.classList.add("show");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeInfoModal() {
+      const modal = document.getElementById("infoModal");
+      modal.classList.remove("show");
+      document.body.style.overflow = "";
+    }
+
+    /* ================================================================
+     *  INIT
+     * ================================================================ */
+    function setPageTheme(genderKey) {
+      document.documentElement.setAttribute("data-gender", genderKey);
+    }
+
+    function init() {
       const genders = Object.keys(REROLL_DATA);
       const btnContainer = document.getElementById("genderButtons");
       btnContainer.innerHTML = genders.map((g, i) => `
         <button class="gender-btn${i === 0 ? " active" : ""}" data-target="${g}" role="tab" aria-selected="${i === 0}">
-          ${genderIcons[g] || ""}${genderLabels[g] || g}
+          ${GENDER_ICONS[g] || ""}${GENDER_LABELS[g] || g}
         </button>
       `).join("");
 
-      const panelsHTML = genders.map((g, i) => renderPanel(g, REROLL_DATA[g], i === 0)).join("");
-      document.getElementById("panelsContainer").innerHTML = panelsHTML;
+      document.getElementById("panelsContainer").innerHTML =
+        genders.map((g, i) => renderPanel(g, REROLL_DATA[g], i === 0)).join("");
 
-      updateGenderCount(genders[0]);
+      setPageTheme(genders[0]);
 
       document.querySelectorAll(".gender-btn").forEach(btn => {
         btn.addEventListener("click", () => {
@@ -1423,11 +1712,10 @@
           });
           btn.classList.add("active");
           btn.setAttribute("aria-selected", "true");
-
           document.querySelectorAll(".view-panel").forEach(p => {
             p.classList.toggle("active", p.dataset.gender === target);
           });
-          updateGenderCount(target);
+          setPageTheme(target);
         });
         btn.addEventListener("keydown", (e) => {
           if (e.key === "Enter" || e.key === " ") { e.preventDefault(); btn.click(); }
@@ -1438,17 +1726,24 @@
         const btn = e.target.closest("[data-copy]");
         if (btn) copyId(btn, btn.dataset.copy);
       });
+
+      document.getElementById("infoBtn").addEventListener("click", () => openInfoModal());
+      document.getElementById("modalClose").addEventListener("click", () => closeInfoModal());
+      document.getElementById("infoModal").addEventListener("click", (e) => {
+        if (e.target === document.getElementById("infoModal")) closeInfoModal();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && document.getElementById("infoModal").classList.contains("show")) {
+          closeInfoModal();
+        }
+      });
+
+      updateInfoButtonState();
     }
 
-    function updateGenderCount(genderKey) {
-      const panel = document.querySelector(`#panel-${genderKey}`);
-      if (!panel) return;
-      const totalSlots = panel.querySelectorAll(".category-section").length;
-      const totalCards = panel.querySelectorAll(".card, .grouped-card").length;
-      document.getElementById("genderCount").textContent = `${totalSlots} slot · ${totalCards} kartu`;
-    }
-
-    /* -------- Copy + Toast -------- */
+    /* ================================================================
+     *  COPY + TOAST
+     * ================================================================ */
     function copyId(buttonElement, idText) {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(idText)
