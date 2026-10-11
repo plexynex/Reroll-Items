@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reroll Items</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    }
+
+    :root {
+      --accent: #7dd3fc;
+      --accent-glow: rgba(125, 211, 252, 0.4);
+      --bg-base: #0a0d14;
+      --panel-bg: rgba(20, 24, 33, 0.55);
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --panel-border-hover: rgba(255, 255, 255, 0.16);
+      --divider: rgba(255, 255, 255, 0.07);
+      --text-primary: #f5f7fa;
+      --text-secondary: #8a93a6;
+      --text-muted: #5a6273;
+
+      --rar-common: #94a3b8;
+      --rar-common-bg: rgba(148, 163, 184, 0.12);
+      --rar-common-bd: rgba(148, 163, 184, 0.3);
+
+      --rar-uncommon: #4ade80;
+      --rar-uncommon-bg: rgba(74, 222, 128, 0.12);
+      --rar-uncommon-bd: rgba(74, 222, 128, 0.3);
+
+      --rar-epic: #c084fc;
+      --rar-epic-bg: rgba(192, 132, 252, 0.14);
+      --rar-epic-bd: rgba(192, 132, 252, 0.35);
+
+      --rar-legend: #fbbf24;
+      --rar-legend-bg: rgba(251, 191, 36, 0.14);
+      --rar-legend-bd: rgba(251, 191, 36, 0.4);
+
+      --rar-unknown: #f87171;
+      --rar-unknown-bg: rgba(248, 113, 113, 0.14);
+      --rar-unknown-bd: rgba(248, 113, 113, 0.4);
+    }
+
+    html, body { min-height: 100vh; }
+
+    body {
+      background-color: var(--bg-base);
+      background-image:
+        radial-gradient(circle at 15% 20%, rgba(125, 211, 252, 0.08), transparent 45%),
+        radial-gradient(circle at 85% 75%, rgba(167, 139, 250, 0.07), transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.015), transparent 70%);
+      background-attachment: fixed;
+      color: var(--text-primary);
+      padding: 2.5rem 1.25rem 4rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.5;
+    }
+
+    .header {
+      width: 100%;
+      max-width: 1100px;
+      margin-bottom: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .header-top { display: flex; align-items: center; gap: 0.75rem; }
+
+    .brand-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 12px var(--accent-glow);
+      flex-shrink: 0;
+    }
+
+    .eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    h1 {
+      font-size: clamp(1.5rem, 4vw, 2.1rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      line-height: 1.15;
+    }
+
+    .subhead {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+      max-width: 620px;
+    }
+
+    .subhead strong { color: var(--accent); font-weight: 500; }
+
+    .gender-bar {
+      position: sticky;
+      top: 1rem;
+      z-index: 50;
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.55rem;
+      margin-bottom: 1.5rem;
+      background: rgba(20, 24, 33, 0.6);
+      backdrop-filter: blur(20px) saturate(140%);
+      -webkit-backdrop-filter: blur(20px) saturate(140%);
+      border: 1px solid var(--panel-border);
+      border-radius: 14px;
+      box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.6);
+      flex-wrap: wrap;
+    }
+
+    .gender-bar-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 500;
+      padding-left: 0.75rem;
+      padding-right: 0.25rem;
+      white-space: nowrap;
+    }
+
+    .gender-buttons { display: flex; gap: 0.4rem; flex: 1; flex-wrap: wrap; }
+
+    .gender-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-secondary);
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      padding: 0.55rem 1.1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+
+    .gender-btn svg {
+      width: 14px; height: 14px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+      flex-shrink: 0;
+    }
+
+    .gender-btn:hover { color: var(--text-primary); background: rgba(255, 255, 255, 0.04); }
+
+    .gender-btn.active {
+      background: rgba(125, 211, 252, 0.1);
+      border-color: rgba(125, 211, 252, 0.3);
+      color: var(--accent);
+      box-shadow: 0 0 20px -8px var(--accent-glow);
+    }
+
+    .gender-bar-count {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      padding-right: 0.75rem;
+      white-space: nowrap;
+    }
+
+    .legend-bar {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      padding: 0.75rem 1rem;
+      background: var(--panel-bg);
+      backdrop-filter: blur(14px) saturate(130%);
+      -webkit-backdrop-filter: blur(14px) saturate(130%);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      flex-wrap: wrap;
+    }
+
+    .legend-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.6rem;
+      border-radius: 20px;
+      border: 1px solid;
+    }
+
+    .legend-item.common   { color: var(--rar-common);    background: var(--rar-common-bg);    border-color: var(--rar-common-bd); }
+    .legend-item.uncommon { color: var(--rar-uncommon);  background: var(--rar-uncommon-bg);  border-color: var(--rar-uncommon-bd); }
+    .legend-item.epic     { color: var(--rar-epic);      background: var(--rar-epic-bg);      border-color: var(--rar-epic-bd); }
+    .legend-item.legend   { color: var(--rar-legend);    background: var(--rar-legend-bg);    border-color: var(--rar-legend-bd); }
+    .legend-item.unknown  { color: var(--rar-unknown);   background: var(--rar-unknown-bg);   border-color: var(--rar-unknown-bd); }
+
+    .view-panel {
+      width: 100%;
+      max-width: 1100px;
+      display: none;
+      flex-direction: column;
+      gap: 2.5rem;
+      animation: fadeIn 0.35s ease;
+    }
+
+    .view-panel.active { display: flex; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .group-block {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      position: relative;
+    }
+
+    .group-label {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .group-label-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--accent) 0%, transparent 40%);
+      opacity: 0.4;
+    }
+
+    .group-label-text {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--accent);
+      text-shadow: 0 0 20px var(--accent-glow);
+      white-space: nowrap;
+    }
+
+    .category-section { display: flex; flex-direction: column; gap: 1.25rem; }
+
+    .category-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--divider);
+      flex-wrap: wrap;
+    }
+
+    .category-title-wrap { display: flex; align-items: center; gap: 0.75rem; }
+
+    .category-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px; height: 32px;
+      border-radius: 9px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--panel-border);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      flex-shrink: 0;
+      color: var(--accent);
+    }
+
+    .category-icon svg {
+      width: 16px; height: 16px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .category-text { display: flex; flex-direction: column; gap: 0.1rem; }
+
+    .category-title {
+      font-size: 0.98rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--text-primary);
+    }
+
+    .category-subtitle {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    .category-count {
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--panel-border);
+      padding: 0.3rem 0.7rem;
+      border-radius: 30px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .grid-container.wide {
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    }
+
+    .card {
+      position: relative;
+      background: var(--panel-bg);
+      backdrop-filter: blur(20px) saturate(140%);
+      -webkit-backdrop-filter: blur(20px) saturate(140%);
+      border: 1px solid var(--panel-border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover {
+      border-color: var(--panel-border-hover);
+      transform: translateY(-3px);
+      box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(125, 211, 252, 0.05);
+    }
+
+    .card[data-rarity="common"]   { border-color: rgba(148, 163, 184, 0.18); }
+    .card[data-rarity="uncommon"] { border-color: rgba(74, 222, 128, 0.2); }
+    .card[data-rarity="epic"]     { border-color: rgba(192, 132, 252, 0.25); box-shadow: 0 0 30px -14px rgba(192, 132, 252, 0.35); }
+    .card[data-rarity="legend"]   { border-color: rgba(251, 191, 36, 0.3); box-shadow: 0 0 35px -12px rgba(251, 191, 36, 0.45); }
+    .card[data-rarity="unknown"]  { border-color: rgba(248, 113, 113, 0.3); box-shadow: 0 0 35px -12px rgba(248, 113, 113, 0.4); }
+
+    .grouped-card {
+      position: relative;
+      background: var(--panel-bg);
+      backdrop-filter: blur(20px) saturate(140%);
+      -webkit-backdrop-filter: blur(20px) saturate(140%);
+      border: 1px solid var(--panel-border);
+      border-radius: 16px;
+      overflow: hidden;
+      padding: 1rem 1.15rem 1.15rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .grouped-card:hover {
+      border-color: var(--panel-border-hover);
+      transform: translateY(-3px);
+      box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.7);
+    }
+
+    .grouped-card[data-rarity="common"]   { border-color: rgba(148, 163, 184, 0.18); }
+    .grouped-card[data-rarity="uncommon"] { border-color: rgba(74, 222, 128, 0.2); }
+    .grouped-card[data-rarity="epic"]     { border-color: rgba(192, 132, 252, 0.28); box-shadow: 0 0 30px -14px rgba(192, 132, 252, 0.35); }
+    .grouped-card[data-rarity="legend"]   { border-color: rgba(251, 191, 36, 0.32); box-shadow: 0 0 35px -12px rgba(251, 191, 36, 0.45); }
+    .grouped-card[data-rarity="unknown"]  { border-color: rgba(248, 113, 113, 0.32); box-shadow: 0 0 35px -12px rgba(248, 113, 113, 0.4); }
+
+    .grouped-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .grouped-card-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .grouped-card-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .chip {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--panel-border);
+      padding: 0.35rem 0.75rem;
+      border-radius: 8px;
+      letter-spacing: -0.01em;
+      transition: all 0.2s ease;
+    }
+
+    .chip:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--panel-border-hover); }
+    .chip.muted { font-style: italic; color: var(--text-muted); }
+
+    .rarity-badge {
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 0.22rem 0.55rem;
+      border-radius: 6px;
+      border: 1px solid;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      white-space: nowrap;
+    }
+
+    .rarity-badge::before {
+      content: '';
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 6px currentColor;
+    }
+
+    .rarity-badge.common   { color: var(--rar-common);    background: var(--rar-common-bg);    border-color: var(--rar-common-bd); }
+    .rarity-badge.uncommon { color: var(--rar-uncommon);  background: var(--rar-uncommon-bg);  border-color: var(--rar-uncommon-bd); }
+    .rarity-badge.epic     { color: var(--rar-epic);      background: var(--rar-epic-bg);      border-color: var(--rar-epic-bd); }
+    .rarity-badge.legend   { color: var(--rar-legend);    background: var(--rar-legend-bg);    border-color: var(--rar-legend-bd); }
+    .rarity-badge.unknown  { color: var(--rar-unknown);   background: var(--rar-unknown-bg);   border-color: var(--rar-unknown-bd); }
+
+    .image-wrapper {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.25rem 1rem;
+      height: 180px;
+      background: radial-gradient(circle at 50% 40%, rgba(125, 211, 252, 0.05), transparent 65%);
+      border-bottom: 1px solid var(--divider);
+      overflow: hidden;
+    }
+
+    .image-wrapper img {
+      max-width: 100%;
+      max-height: 150px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.5));
+      opacity: 0.95;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .card:hover .image-wrapper img { opacity: 1; transform: scale(1.05); }
+
+    .image-wrapper.dual {
+      gap: 0.75rem;
+      padding: 1rem 0.75rem;
+    }
+
+    .image-wrapper.dual .img-cell {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      max-width: 50%;
+    }
+
+    .image-wrapper.dual .img-cell img { max-height: 130px; max-width: 100%; }
+
+    .image-wrapper.dual .img-cell + .img-cell::before {
+      content: '';
+      position: absolute;
+      left: -0.4rem;
+      top: 15%;
+      bottom: 15%;
+      width: 1px;
+      background: var(--divider);
+    }
+
+    .rarity-badge.float {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 3;
+    }
+
+    .slot-badge {
+      position: absolute;
+      top: 0.65rem;
+      left: 0.65rem;
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(125, 211, 252, 0.1);
+      border: 1px solid rgba(125, 211, 252, 0.25);
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 3;
+    }
+
+    .slot-badge.mini {
+      top: 0.4rem;
+      left: 0.4rem;
+      font-size: 0.52rem;
+      padding: 0.15rem 0.45rem;
+    }
+
+    .card-content {
+      padding: 0.9rem 1rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      flex: 1;
+    }
+
+    .id-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding-top: 0.7rem;
+      border-top: 1px solid var(--divider);
+      margin-top: auto;
+    }
+
+    .id-row.no-border {
+      border-top: none;
+      padding-top: 0;
+      margin-top: 0;
+    }
+
+    .id-text {
+      font-family: ui-monospace, 'SF Mono', 'Cascadia Code', 'Courier New', monospace;
+      font-size: 0.76rem;
+      font-weight: 500;
+      color: var(--accent);
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    .id-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      padding-top: 0.7rem;
+      border-top: 1px solid var(--divider);
+      margin-top: auto;
+    }
+
+    .id-item { display: flex; flex-direction: column; gap: 0.35rem; }
+
+    .id-item-head {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.6rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .id-item-head .dot {
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 6px var(--accent-glow);
+    }
+
+    .id-item-body {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.4rem;
+    }
+
+    .id-item-body .name {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .id-item-body .id-text { font-size: 0.72rem; flex-shrink: 0; }
+
+    .copy-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--panel-border);
+      color: var(--text-primary);
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      padding: 0.4rem 0.7rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      white-space: nowrap;
+      font-family: inherit;
+    }
+
+    .copy-btn:hover {
+      background: rgba(125, 211, 252, 0.1);
+      border-color: rgba(125, 211, 252, 0.3);
+      color: var(--accent);
+    }
+
+    .copy-btn:active { transform: scale(0.96); }
+
+    .copy-btn svg {
+      width: 11px; height: 11px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+      flex-shrink: 0;
+    }
+
+    .copy-btn.copied {
+      background: rgba(74, 222, 128, 0.12);
+      border-color: rgba(74, 222, 128, 0.4);
+      color: #4ade80;
+    }
+
+    .copy-btn.mini {
+      padding: 0.3rem 0.5rem;
+      font-size: 0.62rem;
+      border-radius: 6px;
+    }
+
+    .copy-btn.mini svg { width: 10px; height: 10px; }
+
+    .swatch-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.25rem 1rem;
+      height: 180px;
+      background: radial-gradient(circle at 50% 40%, rgba(125, 211, 252, 0.05), transparent 65%);
+      border-bottom: 1px solid var(--divider);
+      position: relative;
+    }
+
+    .swatch-circle {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+      transition: transform 0.25s ease;
+    }
+
+    .card:hover .swatch-circle { transform: scale(1.06); }
+
+    footer {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--divider);
+      width: 100%;
+      max-width: 1100px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: center;
+      letter-spacing: 0.04em;
+    }
+
+    .toast-message {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(20, 24, 33, 0.85);
+      backdrop-filter: blur(20px) saturate(140%);
+      -webkit-backdrop-filter: blur(20px) saturate(140%);
+      border: 1px solid var(--panel-border-hover);
+      color: var(--text-primary);
+      padding: 0.7rem 1.25rem;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.8);
+      opacity: 0;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      pointer-events: none;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .toast-message.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .toast-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent-glow);
+      flex-shrink: 0;
+    }
+
+    .toast-message.error .toast-dot {
+      background: #f87171;
+      box-shadow: 0 0 10px rgba(248, 113, 113, 0.6);
+    }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.15); }
+
+    @media (max-width: 640px) {
+      body { padding: 1.5rem 1rem 3rem; }
+      .gender-bar { top: 0.5rem; padding: 0.5rem; gap: 0.5rem; }
+      .gender-bar-label { display: none; }
+      .gender-btn { flex: 1; justify-content: center; padding: 0.5rem 0.7rem; font-size: 0.76rem; }
+      .gender-bar-count { display: none; }
+      .grid-container { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+      .grid-container.wide { grid-template-columns: 1fr; }
+      .image-wrapper { height: 150px; padding: 1rem 0.75rem; }
+      .image-wrapper img { max-height: 120px; }
+      .image-wrapper.dual .img-cell img { max-height: 100px; }
+      .legend-bar { gap: 0.35rem; padding: 0.6rem 0.75rem; }
+      .legend-item { font-size: 0.6rem; padding: 0.2rem 0.5rem; }
+      .swatch-circle { width: 70px; height: 70px; }
+    }
+
+    @media (max-width: 400px) {
+      .grid-container { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+      .card-content { padding: 0.75rem 0.8rem 0.85rem; }
+      .id-text { font-size: 0.68rem; }
+      .copy-btn { padding: 0.35rem 0.5rem; font-size: 0.62rem; }
+      .image-wrapper { height: 130px; }
+      .image-wrapper img { max-height: 100px; }
+      .image-wrapper.dual .img-cell img { max-height: 80px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-top">
+      <span class="brand-dot"></span>
+      <span class="eyebrow">Katalog / Reroll</span>
+    </div>
+    <h1>Reroll Items</h1>
+    <p class="subhead">
+      Pilih gender untuk melihat slot item. Klik <strong>Salin</strong> untuk menyalin ID unik.
+    </p>
+  </header>
+
+  <div class="gender-bar">
+    <span class="gender-bar-label">Gender</span>
+    <div class="gender-buttons" role="tablist" id="genderButtons">
+      <!-- diisi oleh JS -->
+    </div>
+    <span class="gender-bar-count" id="genderCount">—</span>
+  </div>
+
+  <div class="legend-bar">
+    <span class="legend-label">Rarity</span>
+    <span class="legend-item common">Common</span>
+    <span class="legend-item uncommon">Uncommon</span>
+    <span class="legend-item epic">Epic</span>
+    <span class="legend-item legend">Legend</span>
+    <span class="legend-item unknown">???</span>
+  </div>
+
+  <div id="panelsContainer">
+    <!-- panel diisi oleh JS -->
+  </div>
+
+  <footer>
+    © 2025 Reroll Items — Pilih gender, jelajahi slot item
+  </footer>
+
+  <div id="toast" class="toast-message" role="status" aria-live="polite">
+    <span class="toast-dot"></span>
+    <span id="toastText">Berhasil disalin</span>
+  </div>
+
+  <script>
+    /* ================================================================
+     *  KONFIGURASI REROLL ITEMS
+     *  ------------------------------------------------
+     *  Semua data item ada di sini. Tinggal ubah JSON ini untuk
+     *  mengganti/menambah/menghapus item tanpa menyentuh HTML/CSS/JS
+     *  di bawahnya.
+     * ================================================================ */
+
+    const ICONS = {
+      lastName: '<svg viewBox="0 0 24 24"><path d="M4 6h16"/><path d="M4 12h10"/><path d="M4 18h13"/></svg>',
+      role: '<svg viewBox="0 0 24 24"><path d="M12 3l3 6 6 1-4.5 4.5L18 21l-6-3-6 3 1.5-6.5L3 10l6-1z"/></svg>',
+      height: '<svg viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M8 6l4-3 4 3"/><path d="M8 18l4 3 4-3"/></svg>',
+      skinColor: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>',
+      hair: '<svg viewBox="0 0 24 24"><path d="M4 20c0-6 3-10 8-10s8 4 8 10"/><path d="M8 8c0-3 2-5 4-5s4 2 4 5"/></svg>',
+      hairColor: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18"/></svg>',
+      faceType: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 10h.01"/><path d="M16 10h.01"/><path d="M9 15c1 1 5 1 6 0"/></svg>',
+      uniform: '<svg viewBox="0 0 24 24"><path d="M6 4h12l2 5-3 1v10H7V10L4 9z"/></svg>',
+      head: '<svg viewBox="0 0 24 24"><path d="M4 15h16"/><path d="M6 15V9a6 6 0 0 1 12 0v6"/></svg>',
+      face: '<svg viewBox="0 0 24 24"><rect x="3" y="9" width="18" height="6" rx="3"/><circle cx="8" cy="12" r="1.5"/><circle cx="16" cy="12" r="1.5"/></svg>',
+      neck: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M12 11v9"/><path d="M9 18h6"/></svg>',
+      arm: '<svg viewBox="0 0 24 24"><path d="M6 20V8a4 4 0 0 1 8 0v12"/><path d="M4 8h12"/></svg>',
+      waist: '<svg viewBox="0 0 24 24"><rect x="3" y="10" width="18" height="4" rx="2"/><rect x="10" y="8" width="4" height="8" rx="1"/></svg>',
+      back: '<svg viewBox="0 0 24 24"><path d="M8 6h8l2 12H6z"/><path d="M12 6v12"/></svg>'
+    };
+
+    // Gambar default per kategori (bisa di-override per item)
+    const IMAGE_URLS = {
+      hair: "https://tr.rbxcdn.com/180DAY-06ac539eca677ade575ef1e9284a0a60/420/420/HairAccessory/Webp/noFilter",
+      faceType: "https://tr.rbxcdn.com/30DAY-DynamicHeadCostume-406AAB11E9D737D5CEBD213C443C27AB-Png/420/420/DynamicHeadCostume/Webp/noFilter",
+      shirt: "https://tr.rbxcdn.com/180DAY-acad9c2049b0a435449e779028ceed86/420/420/Shirt/Webp/noFilter",
+      pants: "https://tr.rbxcdn.com/180DAY-a197bc8f6f2a5f6dd5b089572a404/420/420/Pants/Webp/noFilter",
+      accessory: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter"
+    };
+    // fix typo pants
+    IMAGE_URLS.pants = "https://tr.rbxcdn.com/180DAY-a197bc8f6f2a5f6dd5b089572a402f46/420/420/Pants/Webp/noFilter";
+
+    /* ---------- SEMUA DATA ITEM ADA DI SINI ---------- */
+    const REROLL_DATA = {
+      pria: [
+        /* ============ IDENTITY ============ */
+        {
+          group: "Identity",
+          type: "grouped",
+          id: "lastName",
+          title: "Last Name",
+          subtitle: "Nama Belakang",
+          icon: "lastName",
+          tiers: {
+            common:   { names: ["", "Johnson", "Williams"] },
+            uncommon: { names: ["Brown", "Jones", "Garcia"] },
+            epic:     { names: ["Miller", "Davis"] },
+            legend:   { names: ["Rodriguez", "Martinez"] },
+            unknown:  { names: ["Void"] }
+          }
+        },
+        {
+          group: "Identity",
+          type: "grouped",
+          id: "role",
+          title: "Role",
+          subtitle: "Jurusan / Role",
+          icon: "role",
+          tiers: {
+            common:   { names: ["", "TPM", "TSM", "TBSM", "TITL", "Bisnis Digital", "Manajemen Perkantoran", "Akuntansi"] },
+            uncommon: { names: ["DKV", "TBSM", "TEI", "FARMASI", "Animasi", "Desain Produk", "Teknik Pengelasan"] },
+            epic:     { names: ["MEKATRONIKA", "TATA BOGA", "MULTIMEDIA", "Teknik Otomasi Industri", "Teknik Instrumentasi Industri"] },
+            legend:   { names: ["PENERBANGAN", "CYBER SECURITY", "Teknik Pesawat Udara", "Teknik Kendaraan Ringan Otomotif", "Teknik Elektronika Daya", "Teknik Rekayasa Perangkat Lunak"] },
+            unknown:  { names: ["TEKNOLOGI NANO", "Teknik Kedirgantaraan", "Rekayasa Kecerdasan Artifisial", "Robotika", "Teknologi Pangan", "Bioteknologi"] }
+          }
+        },
+
+        /* ============ APPEARANCE ============ */
+        {
+          group: "Appearance",
+          type: "grouped",
+          id: "height",
+          title: "Height",
+          subtitle: "Tinggi Badan (cm)",
+          icon: "height",
+          tiers: {
+            common:   { names: ["130 – 140", "140 – 150"] },
+            uncommon: { names: ["150 – 160", "120 – 130"] },
+            epic:     { names: ["160 – 170", "110 – 120"] },
+            legend:   { names: ["170 – 185", "100 – 110"] },
+            unknown:  { names: ["90 – 100", "185 – 220"] }
+          }
+        },
+        {
+          group: "Appearance",
+          type: "color",
+          id: "skinColor",
+          title: "Skin Color",
+          subtitle: "Warna Kulit (RGB)",
+          icon: "skinColor",
+          tiers: {
+            common:   { value: "255.204.153" },
+            uncommon: { value: "124.78.50" },
+            epic:     { value: "120.80.200" },
+            legend:   { value: "255.215.0" },
+            unknown:  { value: "0.0.0" }
+          }
+        },
+        {
+          group: "Appearance",
+          type: "item",
+          id: "hair",
+          title: "Hair",
+          subtitle: "Model Rambut",
+          icon: "hair",
+          image: "hair",
+          items: [
+            { rarity: "common",   id: "98528599025378" },
+            { rarity: "uncommon", id: "135506916870785" },
+            { rarity: "epic",     id: "110619246329276" },
+            { rarity: "unknown",  id: "12" }
+          ]
+        },
+        {
+          group: "Appearance",
+          type: "color",
+          id: "hairColor",
+          title: "Hair Color",
+          subtitle: "Warna Rambut (RGB)",
+          icon: "hairColor",
+          tiers: {
+            common:   { value: "85.56.102" },
+            uncommon: { value: "200.120.80" },
+            epic:     { value: "150.80.200" },
+            legend:   { value: "255.215.0" },
+            unknown:  { value: "255.0.0" }
+          }
+        },
+        {
+          group: "Appearance",
+          type: "item",
+          id: "faceType",
+          title: "Face Type",
+          subtitle: "Tipe Wajah",
+          icon: "faceType",
+          image: "faceType",
+          items: [
+            { rarity: "common",  id: "110496664617589" },
+            { rarity: "epic",    id: "188976304927401" },
+            { rarity: "legend",  id: "186755253423235" },
+            { rarity: "unknown", id: "273360413038359" }
+          ]
+        },
+        {
+          group: "Appearance",
+          type: "uniform",
+          id: "uniform",
+          title: "Uniform",
+          subtitle: "Shirt + Pants (Satu Set)",
+          icon: "uniform",
+          items: [
+            {
+              rarity: "common",
+              name: "Recruit Set",
+              shirt: { name: "Recruit Set", id: "16810410386" },
+              pants: { name: "Recruit Set", id: "8854324984" }
+            }
+          ]
+        },
+
+        /* ============ ACCESSORIES ============ */
+        {
+          group: "Accessories",
+          type: "item",
+          id: "headAcc",
+          title: "Head Aksesoris",
+          subtitle: "Aksesoris Kepala",
+          icon: "head",
+          image: "accessory",
+          items: [
+            { rarity: "common",   id: "12092086350" },
+            { rarity: "uncommon", id: "6001" }
+          ]
+        },
+        {
+          group: "Accessories",
+          type: "item",
+          id: "faceAcc",
+          title: "Face Aksesoris",
+          subtitle: "Aksesoris Wajah",
+          icon: "face",
+          image: "accessory",
+          items: [
+            { rarity: "common",   id: "17165131496" },
+            { rarity: "uncommon", id: "1201" }
+          ]
+        },
+        {
+          group: "Accessories",
+          type: "item",
+          id: "neckAcc",
+          title: "Neck Aksesoris",
+          subtitle: "Aksesoris Leher",
+          icon: "neck",
+          image: "accessory",
+          items: [
+            { rarity: "common",   id: "138149169311809" },
+            { rarity: "uncommon", id: "2201" }
+          ]
+        },
+        {
+          group: "Accessories",
+          type: "item",
+          id: "armAcc",
+          title: "Arm Aksesoris",
+          subtitle: "Aksesoris Lengan",
+          icon: "arm",
+          image: "accessory",
+          items: [
+            { rarity: "common",   id: "79870665394807" },
+            { rarity: "uncommon", id: "3201" }
+          ]
+        },
+        {
+          group: "Accessories",
+          type: "item",
+          id: "waistAcc",
+          title: "Waist Aksesoris",
+          subtitle: "Aksesoris Pinggang",
+          icon: "waist",
+          image: "accessory",
+          items: [
+            { rarity: "common",   id: "106356059591579" },
+            { rarity: "uncommon", id: "5201" }
+          ]
+        },
+        {
+          group: "Accessories",
+          type: "item",
+          id: "backAcc",
+          title: "Back Aksesoris",
+          subtitle: "Aksesoris Punggung",
+          icon: "back",
+          image: "accessory",
+          items: [
+            { rarity: "common",   id: "103486592724790" },
+            { rarity: "uncommon", id: "4201" }
+          ]
+        }
+      ],
+
+      wanita: [
+        /* ============ IDENTITY ============ */
+        {
+          group: "Identity",
+          type: "grouped",
+          id: "lastName",
+          title: "Last Name",
+          subtitle: "Nama Belakang",
+          icon: "lastName",
+          tiers: {
+            common:   { names: ["Smith", "son", "Williams"] },
+            uncommon: { names: ["Taylor", "Anderson", "Thomas"] },
+            epic:     { names: ["Jackson", "White"] },
+            legend:   { names: ["Harris", "Martin"] },
+            unknown:  { names: ["Nyx"] }
+          }
+        },
+        {
+          group: "Identity",
+          type: "grouped",
+          id: "role",
+          title: "Role",
+          subtitle: "Jurusan / Role",
+          icon: "role",
+          tiers: {
+            common:   { names: ["", "TPM", "TSM", "TBSM", "TITL", "Bisnis Digital", "Manajemen Perkantoran", "Akuntansi"] },
+            uncommon: { names: ["DKV", "TBSM", "TEI", "FARMASI", "Animasi", "Desain Produk", "Teknik Pengelasan"] },
+            epic:     { names: ["MEKATRONIKA", "TATA BOGA", "MULTIMEDIA", "Teknik Otomasi Industri", "Teknik Instrumentasi Industri"] },
+            legend:   { names: ["PENERBANGAN", "CYBER SECURITY", "Teknik Pesawat Udara", "Teknik Kendaraan Ringan Otomotif", "Teknik Elektronika Daya", "Teknik Rekayasa Perangkat Lunak"] },
+            unknown:  { names: ["TEKNOLOGI NANO", "Teknik Kedirgantaraan", "Rekayasa Kecerdasan Artifisial", "Robotika", "Teknologi Pangan", "Bioteknologi"] }
+          }
+        },
+
+        /* ============ APPEARANCE ============ */
+        {
+          group: "Appearance",
+          type: "grouped",
+          id: "height",
+          title: "Height",
+          subtitle: "Tinggi Badan (cm)",
+          icon: "height",
+          tiers: {
+            common:   { names: ["130 – 140", "140 – 150"] },
+            uncommon: { names: ["150 – 160", "120 – 130"] },
+            epic:     { names: ["160 – 170", "110 – 120"] },
+            legend:   { names: ["170 – 185", "100 – 110"] },
+            unknown:  { names: ["90 – 100", "185 – 220"] }
+          }
+        },
+        {
+          group: "Appearance",
+          type: "color",
+          id: "skinColor",
+          title: "Skin Color",
+          subtitle: "Warna Kulit (RGB)",
+          icon: "skinColor",
+          tiers: {
+            common:   { value: "255.204.153" },
+            uncommon: { value: "124.78.50" },
+            epic:     { value: "120.80.200" },
+            legend:   { value: "255.215.0" },
+            unknown:  { value: "0.255.255" }
+          }
+        },
+        {
+          group: "Appearance",
+          type: "item",
+          id: "hair",
+          title: "Hair",
+          subtitle: "Model Rambut",
+          icon: "hair",
+          image: "hair",
+          items: [
+            { rarity: "common",   id: "0" },
+            { rarity: "uncommon", id: "15219402962" },
+            { rarity: "epic",     id: "128817841068722" },
+            { rarity: "unknown",  id: "25" }
+          ]
+        },
+        {
+          group: "Appearance",
+          type: "color",
+          id: "hairColor",
+          title: "Hair Color",
+          subtitle: "Warna Rambut (RGB)",
+          icon: "hairColor",
+          tiers: {
+            common:   { value: "85.56.102" },
+            uncommon: { value: "200.120.80" },
+            epic:     { value: "150.80.200" },
+            legend:   { value: "255.215.0" },
+            unknown:  { value: "255.0.0" }
+          }
+        },
+        {
+          group: "Appearance",
+          type: "item",
+          id: "faceType",
+          title: "Face Type",
+          subtitle: "Tipe Wajah",
+          icon: "faceType",
+          image: "faceType",
+          items: [
+            { rarity: "common",  id: "157757222154606" },
+            { rarity: "epic",    id: "258523744380054" },
+            { rarity: "legend",  id: "132921897850212" },
+            { rarity: "unknown", id: "273360413038359" }
+          ]
+        },
+        {
+          group: "Appearance",
+          type: "uniform",
+          id: "uniform",
+          title: "Uniform",
+          subtitle: "Shirt + Pants (Satu Set)",
+          icon: "uniform",
+          items: [
+            {
+              rarity: "common",
+              name: "Scout Set",
+              shirt: { name: "Scout Set", id: "1006" },
+              pants: { name: "Scout Set", id: "2006" }
+            }
+          ]
+        },
+
+        /* ============ ACCESSORIES ============ */
+        {
+          group: "Accessories",
+          type: "item",
+          id: "headAcc",
+          title: "Head Aksesoris",
+          subtitle: "Aksesoris Kepala",
+          icon: "head",
+          image: "accessory",
+          items: [
+            { rarity: "common",   id: "12092086350" },
+            { rarity: "uncommon", id: "6002" }
+          ]
+        },
+        {
+          group: "Accessories",
+          type: "item",
+          id: "faceAcc",
+          title: "Face Aksesoris",
+          subtitle: "Aksesoris Wajah",
+          icon: "face",
+          image: "accessory",
+          items: [
+            { rarity: "common",   id: "17165131496" },
+            { rarity: "uncommon", id: "1202" }
+          ]
+        },
+        {
+          group: "Accessories",
+          type: "item",
+          id: "neckAcc",
+          title: "Neck Aksesoris",
+          subtitle: "Aksesoris Leher",
+          icon: "neck",
+          image: "accessory",
+          items: [
+            { rarity: "common",   id: "138149169311809" },
+            { rarity: "uncommon", id: "2202" }
+          ]
+        },
+        {
+          group: "Accessories",
+          type: "item",
+          id: "armAcc",
+          title: "Arm Aksesoris",
+          subtitle: "Aksesoris Lengan",
+          icon: "arm",
+          image: "accessory",
+          items: [
+            { rarity: "common",   id: "79870665394807" },
+            { rarity: "uncommon", id: "3202" }
+          ]
+        },
+        {
+          group: "Accessories",
+          type: "item",
+          id: "waistAcc",
+          title: "Waist Aksesoris",
+          subtitle: "Aksesoris Pinggang",
+          icon: "waist",
+          image: "accessory",
+          items: [
+            { rarity: "common",   id: "5103" },
+            { rarity: "uncommon", id: "5202" }
+          ]
+        },
+        {
+          group: "Accessories",
+          type: "item",
+          id: "backAcc",
+          title: "Back Aksesoris",
+          subtitle: "Aksesoris Punggung",
+          icon: "back",
+          image: "accessory",
+          items: [
+            { rarity: "common",   id: "103486592724790" },
+            { rarity: "uncommon", id: "4202" }
+          ]
+        }
+      ]
+    };
+
+    /* ================================================================
+     *  RENDER ENGINE — jangan diubah kecuali perlu
+     * ================================================================ */
+
+    const TIER_LABEL = {
+      common: "Common", uncommon: "Uncommon", epic: "Epic",
+      legend: "Legend", unknown: "???"
+    };
+
+    // RGB string -> hex helper untuk swatch preview
+    function rgbPreview(rgbStr) {
+      const p = rgbStr.split(".").map(n => parseInt(n, 10));
+      if (p.length !== 3 || p.some(n => isNaN(n))) return "#000";
+      return `rgb(${p[0]},${p[1]},${p[2]})`;
+    }
+
+    const COPY_ICON = '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+
+    function copyBtn(value, mini = false) {
+      return `<button class="copy-btn${mini ? ' mini' : ''}" data-copy="${escapeAttr(value)}">${COPY_ICON}${mini ? '' : 'Salin'}</button>`;
+    }
+
+    function escapeAttr(s) {
+      return String(s).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    /* -------- Render: grouped card (Last Name / Role / Height) -------- */
+    function renderGroupedCard(section) {
+      const tierOrder = ["common", "uncommon", "epic", "legend", "unknown"];
+      return tierOrder.filter(t => section.tiers[t]).map(tier => {
+        const tierData = section.tiers[tier];
+        const names = (tierData.names || []).map(n =>
+          n === "" ? `<span class="chip muted">(kosong)</span>` : `<span class="chip">${n}</span>`
+        ).join("");
+        return `
+          <div class="grouped-card" data-rarity="${tier}">
+            <div class="grouped-card-header">
+              <span class="grouped-card-title">${TIER_LABEL[tier]}</span>
+              <span class="rarity-badge ${tier}">${TIER_LABEL[tier]}</span>
+            </div>
+            <div class="grouped-card-list">${names}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    /* -------- Render: color card (Skin Color / Hair Color) -------- */
+    function renderColorCard(section) {
+      const tierOrder = ["common", "uncommon", "epic", "legend", "unknown"];
+      return tierOrder.filter(t => section.tiers[t]).map(tier => {
+        const value = section.tiers[tier].value;
+        return `
+          <article class="card" data-rarity="${tier}">
+            <div class="swatch-wrapper">
+              <span class="rarity-badge float ${tier}">${TIER_LABEL[tier]}</span>
+              <div class="swatch-circle" style="background:${rgbPreview(value)};"></div>
+            </div>
+            <div class="card-content">
+              <div class="id-row no-border">
+                <span class="id-text">${value}</span>
+                ${copyBtn(value)}
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    /* -------- Render: item card (Hair / Face Type / Accessories) -------- */
+    function renderItemCard(section) {
+      const img = IMAGE_URLS[section.image] || "";
+      return section.items.map(it => `
+        <article class="card" data-rarity="${it.rarity}">
+          <div class="image-wrapper">
+            <span class="rarity-badge float ${it.rarity}">${TIER_LABEL[it.rarity]}</span>
+            <img src="${img}" alt="${section.title} ${it.id}" loading="lazy">
+          </div>
+          <div class="card-content">
+            <div class="id-row">
+              <span class="id-text">${it.id}</span>
+              ${copyBtn(it.id)}
+            </div>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    /* -------- Render: uniform card -------- */
+    function renderUniformCard(section) {
+      return section.items.map(it => `
+        <article class="card" data-rarity="${it.rarity}">
+          <div class="image-wrapper dual">
+            <span class="slot-badge">Set</span>
+            <span class="rarity-badge float ${it.rarity}">${TIER_LABEL[it.rarity]}</span>
+            <div class="img-cell">
+              <span class="slot-badge mini">Shirt</span>
+              <img src="${IMAGE_URLS.shirt}" alt="${it.shirt.name} Shirt" loading="lazy">
+            </div>
+            <div class="img-cell">
+              <span class="slot-badge mini">Pants</span>
+              <img src="${IMAGE_URLS.pants}" alt="${it.pants.name} Pants" loading="lazy">
+            </div>
+          </div>
+          <div class="card-content">
+            <div class="id-list">
+              <div class="id-item">
+                <div class="id-item-head"><span class="dot"></span>Shirt · ${it.name}</div>
+                <div class="id-item-body">
+                  <span class="name">${it.shirt.name}</span>
+                  <span class="id-text">${it.shirt.id}</span>
+                  ${copyBtn(it.shirt.id, true)}
+                </div>
+              </div>
+              <div class="id-item">
+                <div class="id-item-head"><span class="dot"></span>Pants · ${it.name}</div>
+                <div class="id-item-body">
+                  <span class="name">${it.pants.name}</span>
+                  <span class="id-text">${it.pants.id}</span>
+                  ${copyBtn(it.pants.id, true)}
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    /* -------- Render: satu section -------- */
+    function renderSection(section) {
+      let gridContent, countLabel, gridClass = "grid-container";
+
+      if (section.type === "grouped") {
+        gridContent = renderGroupedCard(section);
+        gridClass += " wide";
+        const tiersCount = Object.keys(section.tiers).length;
+        const totalNames = Object.values(section.tiers)
+          .reduce((sum, t) => sum + (t.names ? t.names.length : 0), 0);
+        countLabel = `${tiersCount} tier · ${totalNames} item`;
+      } else if (section.type === "color") {
+        gridContent = renderColorCard(section);
+        countLabel = `${Object.keys(section.tiers).length} item`;
+      } else if (section.type === "uniform") {
+        gridContent = renderUniformCard(section);
+        gridClass += " wide";
+        countLabel = `${section.items.length} set`;
+      } else {
+        gridContent = renderItemCard(section);
+        countLabel = `${section.items.length} item`;
+      }
+
+      return `
+        <section class="category-section">
+          <div class="category-header">
+            <div class="category-title-wrap">
+              <span class="category-icon">${ICONS[section.icon] || ""}</span>
+              <div class="category-text">
+                <span class="category-title">${section.title}</span>
+                <span class="category-subtitle">${section.subtitle}</span>
+              </div>
+            </div>
+            <span class="category-count">${countLabel}</span>
+          </div>
+          <div class="${gridClass}">${gridContent}</div>
+        </section>
+      `;
+    }
+
+    /* -------- Render: satu panel (satu gender) -------- */
+    function renderPanel(genderKey, sections, isActive) {
+      // Group by "group"
+      const groups = [];
+      const groupMap = {};
+      sections.forEach(s => {
+        if (!groupMap[s.group]) {
+          groupMap[s.group] = [];
+          groups.push(s.group);
+        }
+        groupMap[s.group].push(s);
+      });
+
+      const html = groups.map(groupName => {
+        const items = groupMap[groupName].map(renderSection).join("");
+        return `
+          <div class="group-block">
+            <div class="group-label">
+              <span class="group-label-text">${groupName}</span>
+              <span class="group-label-line"></span>
+            </div>
+            ${items}
+          </div>
+        `;
+      }).join("");
+
+      return `<div class="view-panel${isActive ? " active" : ""}" id="panel-${genderKey}" data-gender="${genderKey}">${html}</div>`;
+    }
+
+    /* -------- Init: build semua panel + tombol gender -------- */
+    function init() {
+      // Tombol gender
+      const genderLabels = { pria: "Pria", wanita: "Wanita" };
+      const genderIcons = {
+        pria: '<svg viewBox="0 0 24 24"><circle cx="10" cy="14" r="5"/><path d="M19 5l-5.4 5.4"/><path d="M14 5h5v5"/></svg>',
+        wanita: '<svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="5"/><path d="M12 14v7"/><path d="M9 18h6"/></svg>'
+      };
+
+      const genders = Object.keys(REROLL_DATA);
+      const btnContainer = document.getElementById("genderButtons");
+      btnContainer.innerHTML = genders.map((g, i) => `
+        <button class="gender-btn${i === 0 ? " active" : ""}" data-target="${g}" role="tab" aria-selected="${i === 0}">
+          ${genderIcons[g] || ""}${genderLabels[g] || g}
+        </button>
+      `).join("");
+
+      // Panel
+      const panelsHTML = genders.map((g, i) => renderPanel(g, REROLL_DATA[g], i === 0)).join("");
+      document.getElementById("panelsContainer").innerHTML = panelsHTML;
+
+      // Update count
+      updateGenderCount(genders[0]);
+
+      // Event listener gender
+      document.querySelectorAll(".gender-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const target = btn.dataset.target;
+          document.querySelectorAll(".gender-btn").forEach(b => {
+            b.classList.remove("active");
+            b.setAttribute("aria-selected", "false");
+          });
+          btn.classList.add("active");
+          btn.setAttribute("aria-selected", "true");
+
+          document.querySelectorAll(".view-panel").forEach(p => {
+            p.classList.toggle("active", p.dataset.gender === target);
+          });
+          updateGenderCount(target);
+        });
+        btn.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); btn.click(); }
+        });
+      });
+
+      // Event listener copy (delegated)
+      document.body.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-copy]");
+        if (btn) {
+          copyId(btn, btn.dataset.copy);
+        }
+      });
+    }
+
+    function updateGenderCount(genderKey) {
+      const panel = document.querySelector(`#panel-${genderKey}`);
+      if (!panel) return;
+      const totalSlots = panel.querySelectorAll(".category-section").length;
+      const totalCards = panel.querySelectorAll(".card, .grouped-card").length;
+      document.getElementById("genderCount").textContent = `${totalSlots} slot · ${totalCards} kartu`;
+    }
+
+    /* -------- Copy + Toast -------- */
+    function copyId(buttonElement, idText) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(idText)
+          .then(() => { showToast(`"${idText}" disalin`); animateButton(buttonElement); })
+          .catch(() => fallbackCopy(idText, buttonElement));
+      } else {
+        fallbackCopy(idText, buttonElement);
+      }
+    }
+
+    function fallbackCopy(text, buttonElement) {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      textarea.style.left = "-9999px";
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        const ok = document.execCommand("copy");
+        if (ok) { showToast(`"${text}" disalin`); animateButton(buttonElement); }
+        else showToast("Gagal menyalin", true);
+      } catch (err) { showToast("Gagal menyalin", true); }
+      document.body.removeChild(textarea);
+    }
+
+    function animateButton(btn) {
+      const originalHTML = btn.innerHTML;
+      btn.innerHTML = `<svg viewBox="0 0 24 24" style="stroke: currentColor;"><polyline points="20 6 9 17 4 12"/></svg>`;
+      btn.classList.add("copied");
+      setTimeout(() => { btn.innerHTML = originalHTML; btn.classList.remove("copied"); }, 1600);
+    }
+
+    let toastTimer = null;
+    function showToast(message, isError = false) {
+      const toast = document.getElementById("toast");
+      const toastText = document.getElementById("toastText");
+      toastText.textContent = message;
+      toast.classList.toggle("error", isError);
+      toast.classList.add("show");
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    init();
+  </script>
+</body>
+</html>
