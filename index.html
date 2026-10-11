@@ -4,12 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reroll Items</title>
+
+  <!-- Google Fonts: Outfit (sans-serif) + JetBrains Mono (monospace) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      /* Default font: Outfit sans-serif */
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
     :root {
@@ -60,6 +67,9 @@
       --rar-unknown: #f87171;
       --rar-unknown-bg: rgba(248, 113, 113, 0.14);
       --rar-unknown-bd: rgba(248, 113, 113, 0.4);
+
+      --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', 'Cascadia Code', 'Courier New', monospace;
     }
 
     html[data-gender="male"] {
@@ -96,6 +106,9 @@
       transition: background-image 0.5s ease;
     }
 
+    /* ============================================================
+       HEADER
+       ============================================================ */
     .header {
       width: 100%;
       max-width: 1100px;
@@ -117,6 +130,7 @@
     }
 
     .eyebrow {
+      font-family: var(--font-mono);
       font-size: 0.7rem;
       letter-spacing: 0.18em;
       text-transform: uppercase;
@@ -125,14 +139,16 @@
     }
 
     h1 {
+      font-family: var(--font-sans);
       font-size: clamp(1.5rem, 4vw, 2.1rem);
-      font-weight: 600;
-      letter-spacing: -0.02em;
+      font-weight: 700;
+      letter-spacing: -0.025em;
       color: var(--text-primary);
       line-height: 1.15;
     }
 
     .subhead {
+      font-family: var(--font-sans);
       font-size: 0.9rem;
       color: var(--text-secondary);
       font-weight: 400;
@@ -141,11 +157,13 @@
 
     .subhead strong {
       color: var(--accent);
-      font-weight: 500;
+      font-weight: 600;
       transition: color 0.4s ease;
     }
 
-    /* ---------- GENDER BAR ---------- */
+    /* ============================================================
+       GENDER BAR
+       ============================================================ */
     .gender-bar {
       position: sticky;
       top: 1rem;
@@ -182,6 +200,7 @@
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--panel-border);
       color: var(--text-secondary);
+      font-family: var(--font-sans);
       font-size: 0.95rem;
       font-weight: 600;
       letter-spacing: 0.04em;
@@ -189,7 +208,6 @@
       border-radius: 12px;
       cursor: pointer;
       transition: all 0.25s ease;
-      font-family: inherit;
       white-space: nowrap;
       flex: 1;
       min-width: 120px;
@@ -238,7 +256,9 @@
       text-shadow: 0 0 12px var(--female-glow);
     }
 
-    /* ---------- INFO BUTTON ---------- */
+    /* ============================================================
+       INFO BUTTON
+       ============================================================ */
     .info-btn {
       display: inline-flex;
       align-items: center;
@@ -247,6 +267,7 @@
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--panel-border);
       color: var(--text-secondary);
+      font-family: var(--font-sans);
       font-size: 0.85rem;
       font-weight: 600;
       letter-spacing: 0.06em;
@@ -254,7 +275,6 @@
       border-radius: 12px;
       cursor: pointer;
       transition: all 0.25s ease;
-      font-family: inherit;
       white-space: nowrap;
       text-transform: uppercase;
       position: relative;
@@ -274,7 +294,6 @@
       box-shadow: 0 0 20px -8px var(--accent-glow);
     }
 
-    /* State NEW: tombol info berdenyut merah */
     .info-btn.has-new {
       color: var(--new-color);
       background: rgba(255, 59, 59, 0.1);
@@ -317,7 +336,9 @@
       50% { transform: scale(1.15); }
     }
 
-    /* ---------- LEGEND ---------- */
+    /* ============================================================
+       LEGEND
+       ============================================================ */
     .legend-bar {
       width: 100%;
       max-width: 1100px;
@@ -335,6 +356,7 @@
     }
 
     .legend-label {
+      font-family: var(--font-mono);
       font-size: 0.65rem;
       letter-spacing: 0.14em;
       text-transform: uppercase;
@@ -347,8 +369,9 @@
       display: inline-flex;
       align-items: center;
       gap: 0.35rem;
+      font-family: var(--font-mono);
       font-size: 0.68rem;
-      font-weight: 600;
+      font-weight: 700;
       letter-spacing: 0.06em;
       text-transform: uppercase;
       padding: 0.25rem 0.6rem;
@@ -362,7 +385,9 @@
     .legend-item.legend   { color: var(--rar-legend);    background: var(--rar-legend-bg);    border-color: var(--rar-legend-bd); }
     .legend-item.unknown  { color: var(--rar-unknown);   background: var(--rar-unknown-bg);   border-color: var(--rar-unknown-bd); }
 
-    /* ---------- VIEW PANEL ---------- */
+    /* ============================================================
+       VIEW PANEL
+       ============================================================ */
     .view-panel {
       width: 100%;
       max-width: 1100px;
@@ -402,7 +427,8 @@
     }
 
     .group-label-text {
-      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
       font-weight: 700;
       letter-spacing: 0.24em;
       text-transform: uppercase;
@@ -412,6 +438,9 @@
       transition: color 0.4s ease, text-shadow 0.4s ease;
     }
 
+    /* ============================================================
+       CATEGORY SECTION
+       ============================================================ */
     .category-section { display: flex; flex-direction: column; gap: 1.25rem; }
 
     .category-header {
@@ -451,23 +480,26 @@
     .category-text { display: flex; flex-direction: column; gap: 0.1rem; }
 
     .category-title {
-      font-size: 0.98rem;
+      font-family: var(--font-sans);
+      font-size: 1rem;
       font-weight: 600;
       letter-spacing: -0.01em;
       color: var(--text-primary);
     }
 
     .category-subtitle {
-      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
       color: var(--text-muted);
-      letter-spacing: 0.1em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       font-weight: 500;
     }
 
     .category-count {
-      font-size: 0.7rem;
-      font-weight: 500;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
       color: var(--text-secondary);
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--panel-border);
@@ -479,6 +511,9 @@
       white-space: nowrap;
     }
 
+    /* ============================================================
+       GRID
+       ============================================================ */
     .grid-container {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -489,6 +524,9 @@
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     }
 
+    /* ============================================================
+       CARD
+       ============================================================ */
     .card {
       position: relative;
       background: var(--panel-bg);
@@ -549,9 +587,10 @@
     }
 
     .grouped-card-title {
-      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       color: var(--text-muted);
     }
@@ -563,14 +602,15 @@
     }
 
     .chip {
-      font-size: 0.82rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
       font-weight: 500;
       color: var(--text-primary);
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--panel-border);
       padding: 0.35rem 0.75rem;
       border-radius: 8px;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.005em;
       transition: all 0.2s ease;
     }
 
@@ -580,7 +620,11 @@
     }
     .chip.muted { font-style: italic; color: var(--text-muted); }
 
+    /* ============================================================
+       RARITY BADGE
+       ============================================================ */
     .rarity-badge {
+      font-family: var(--font-mono);
       font-size: 0.58rem;
       font-weight: 700;
       letter-spacing: 0.14em;
@@ -610,6 +654,9 @@
     .rarity-badge.legend   { color: var(--rar-legend);    background: var(--rar-legend-bg);    border-color: var(--rar-legend-bd); }
     .rarity-badge.unknown  { color: var(--rar-unknown);   background: var(--rar-unknown-bg);   border-color: var(--rar-unknown-bd); }
 
+    /* ============================================================
+       IMAGE WRAPPER
+       ============================================================ */
     .image-wrapper {
       position: relative;
       display: flex;
@@ -665,15 +712,15 @@
       background: var(--divider);
     }
 
-    /* Set name di tengah bawah untuk uniform */
     .set-name-badge {
       position: absolute;
       left: 50%;
       bottom: 0.85rem;
       transform: translateX(-50%);
-      font-size: 0.82rem;
-      font-weight: 700;
-      letter-spacing: 0.02em;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: -0.005em;
       color: var(--text-primary);
       background: rgba(20, 24, 33, 0.85);
       backdrop-filter: blur(10px);
@@ -701,6 +748,7 @@
       position: absolute;
       top: 0.65rem;
       left: 0.65rem;
+      font-family: var(--font-mono);
       font-size: 0.6rem;
       font-weight: 600;
       letter-spacing: 0.12em;
@@ -723,6 +771,9 @@
       padding: 0.15rem 0.45rem;
     }
 
+    /* ============================================================
+       CARD CONTENT
+       ============================================================ */
     .card-content {
       padding: 0.9rem 1rem 1rem;
       display: flex;
@@ -748,11 +799,11 @@
     }
 
     .id-text {
-      font-family: ui-monospace, 'SF Mono', 'Cascadia Code', 'Courier New', monospace;
-      font-size: 0.76rem;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
       font-weight: 500;
       color: var(--accent);
-      letter-spacing: 0.03em;
+      letter-spacing: 0.02em;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -760,7 +811,6 @@
       transition: color 0.4s ease, text-shadow 0.4s ease;
     }
 
-    /* Uniform: hanya ID, tanpa nama duplikat */
     .id-list {
       display: flex;
       flex-direction: column;
@@ -776,6 +826,7 @@
       display: flex;
       align-items: center;
       gap: 0.4rem;
+      font-family: var(--font-mono);
       font-size: 0.6rem;
       letter-spacing: 0.14em;
       text-transform: uppercase;
@@ -798,8 +849,11 @@
       gap: 0.4rem;
     }
 
-    .id-item-body .id-text { font-size: 0.76rem; flex: 1; }
+    .id-item-body .id-text { font-size: 0.78rem; flex: 1; }
 
+    /* ============================================================
+       COPY BUTTON
+       ============================================================ */
     .copy-btn {
       display: inline-flex;
       align-items: center;
@@ -808,9 +862,10 @@
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--panel-border);
       color: var(--text-primary);
-      font-size: 0.68rem;
+      font-family: var(--font-sans);
+      font-size: 0.72rem;
       font-weight: 500;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.02em;
       padding: 0.4rem 0.7rem;
       border-radius: 8px;
       cursor: pointer;
@@ -818,7 +873,6 @@
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       white-space: nowrap;
-      font-family: inherit;
     }
 
     .copy-btn:hover {
@@ -851,6 +905,9 @@
 
     .copy-btn.mini svg { width: 10px; height: 10px; }
 
+    /* ============================================================
+       SWATCH (Skin/Hair Color)
+       ============================================================ */
     .swatch-wrapper {
       display: flex;
       justify-content: center;
@@ -874,18 +931,25 @@
 
     .card:hover .swatch-circle { transform: scale(1.06); }
 
+    /* ============================================================
+       FOOTER
+       ============================================================ */
     footer {
       margin-top: 3rem;
       padding-top: 1.5rem;
       border-top: 1px solid var(--divider);
       width: 100%;
       max-width: 1100px;
-      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
       color: var(--text-muted);
       text-align: center;
       letter-spacing: 0.04em;
     }
 
+    /* ============================================================
+       TOAST
+       ============================================================ */
     .toast-message {
       position: fixed;
       bottom: 28px;
@@ -898,9 +962,10 @@
       color: var(--text-primary);
       padding: 0.7rem 1.25rem;
       border-radius: 12px;
-      font-size: 0.82rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
       font-weight: 500;
-      letter-spacing: 0.02em;
+      letter-spacing: 0.01em;
       box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.8), 0 0 20px -8px var(--accent-glow);
       opacity: 0;
       transition: opacity 0.25s ease, transform 0.25s ease, border-color 0.4s ease, box-shadow 0.4s ease;
@@ -927,7 +992,9 @@
       box-shadow: 0 0 10px rgba(248, 113, 113, 0.6);
     }
 
-    /* ---------- MODAL INFO ---------- */
+    /* ============================================================
+       MODAL INFO
+       ============================================================ */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -991,8 +1058,9 @@
     }
 
     .modal-title {
-      font-size: 1.05rem;
-      font-weight: 600;
+      font-family: var(--font-sans);
+      font-size: 1.1rem;
+      font-weight: 700;
       letter-spacing: -0.01em;
       color: var(--text-primary);
     }
@@ -1008,7 +1076,6 @@
       color: var(--text-secondary);
       cursor: pointer;
       transition: all 0.2s ease;
-      font-family: inherit;
       flex-shrink: 0;
     }
 
@@ -1066,13 +1133,8 @@
       animation: newPulse 2.4s ease-in-out infinite;
     }
 
-    .info-column.is-new[data-gender="male"] {
-      border-left-color: var(--male-color);
-    }
-
-    .info-column.is-new[data-gender="female"] {
-      border-left-color: var(--female-color);
-    }
+    .info-column.is-new[data-gender="male"] { border-left-color: var(--male-color); }
+    .info-column.is-new[data-gender="female"] { border-left-color: var(--female-color); }
 
     @keyframes newPulse {
       0%, 100% { box-shadow: 0 0 30px -8px rgba(255, 59, 59, 0.4), inset 0 0 30px -18px rgba(255, 59, 59, 0.3); }
@@ -1118,9 +1180,10 @@
     }
 
     .info-column-title {
-      font-size: 0.85rem;
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
       font-weight: 700;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
       transition: all 0.25s ease;
       flex: 1;
@@ -1140,6 +1203,7 @@
       display: inline-flex;
       align-items: center;
       gap: 0.3rem;
+      font-family: var(--font-mono);
       font-size: 0.58rem;
       font-weight: 800;
       letter-spacing: 0.16em;
@@ -1174,14 +1238,16 @@
     }
 
     .info-column-text {
-      font-size: 0.85rem;
-      line-height: 1.65;
+      font-family: var(--font-sans);
+      font-size: 0.88rem;
+      line-height: 1.7;
       color: var(--text-secondary);
       word-wrap: break-word;
       overflow-wrap: break-word;
       word-break: break-word;
       white-space: pre-wrap;
       hyphens: auto;
+      font-weight: 400;
     }
 
     .info-column.is-new .info-column-text { color: var(--text-primary); }
@@ -1196,6 +1262,9 @@
     ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.15); }
 
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
     @media (max-width: 640px) {
       body { padding: 1.5rem 1rem 3rem; }
       .gender-bar { top: 0.5rem; padding: 0.6rem; gap: 0.5rem; }
@@ -1210,7 +1279,7 @@
       .image-wrapper img { max-height: 120px; }
       .image-wrapper.dual { height: 180px; padding: 1rem 0.75rem 2rem; }
       .image-wrapper.dual .img-cell img { max-height: 100px; }
-      .set-name-badge { font-size: 0.72rem; padding: 0.25rem 0.75rem; bottom: 0.6rem; }
+      .set-name-badge { font-size: 0.75rem; padding: 0.25rem 0.75rem; bottom: 0.6rem; }
       .legend-bar { gap: 0.35rem; padding: 0.6rem 0.75rem; }
       .legend-item { font-size: 0.6rem; padding: 0.2rem 0.5rem; }
       .swatch-circle { width: 70px; height: 70px; }
@@ -1224,14 +1293,14 @@
     @media (max-width: 400px) {
       .grid-container { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
       .card-content { padding: 0.75rem 0.8rem 0.85rem; }
-      .id-text { font-size: 0.68rem; }
+      .id-text { font-size: 0.7rem; }
       .copy-btn { padding: 0.35rem 0.5rem; font-size: 0.62rem; }
       .image-wrapper { height: 130px; }
       .image-wrapper img { max-height: 100px; }
       .image-wrapper.dual { height: 160px; padding: 0.85rem 0.6rem 1.75rem; }
       .image-wrapper.dual .img-cell img { max-height: 80px; }
-      .set-name-badge { font-size: 0.65rem; padding: 0.2rem 0.6rem; }
-      .info-column-text { font-size: 0.8rem; }
+      .set-name-badge { font-size: 0.68rem; padding: 0.2rem 0.6rem; }
+      .info-column-text { font-size: 0.82rem; }
     }
   </style>
 </head>
@@ -1542,7 +1611,6 @@ Perubahan berlaku otomatis setelah halaman di-refresh.`
       }).join("");
     }
 
-    // Uniform: nama set di tengah gambar, ID saja di bawah (Shirt & Pants)
     function renderUniformCard(section) {
       return section.items.map(it => {
         const shirtImg = resolveImage(it.shirt, section, "shirt");
