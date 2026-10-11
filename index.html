@@ -809,9 +809,7 @@
 
   <div class="gender-bar">
     <span class="gender-bar-label">Gender</span>
-    <div class="gender-buttons" role="tablist" id="genderButtons">
-      <!-- diisi oleh JS -->
-    </div>
+    <div class="gender-buttons" role="tablist" id="genderButtons"></div>
     <span class="gender-bar-count" id="genderCount">—</span>
   </div>
 
@@ -824,9 +822,7 @@
     <span class="legend-item unknown">???</span>
   </div>
 
-  <div id="panelsContainer">
-    <!-- panel diisi oleh JS -->
-  </div>
+  <div id="panelsContainer"></div>
 
   <footer>
     © 2025 Reroll Items — Pilih gender, jelajahi slot item
@@ -840,12 +836,14 @@
   <script>
     /* ================================================================
      *  KONFIGURASI REROLL ITEMS
-     *  ------------------------------------------------
-     *  Semua data item ada di sini. Tinggal ubah JSON ini untuk
-     *  mengganti/menambah/menghapus item tanpa menyentuh HTML/CSS/JS
-     *  di bawahnya.
+     *  ----------------------------------------------------------------
+     *  PENTING:
+     *  - Setiap ITEM memiliki field "image" sendiri (URL preview item).
+     *  - Untuk Uniform, item punya "shirtImage" dan "pantsImage" sendiri.
+     *  - Ini memungkinkan tiap item punya gambar preview yang berbeda.
      * ================================================================ */
 
+    /* ---------- ICON SVG (untuk header kategori) ---------- */
     const ICONS = {
       lastName: '<svg viewBox="0 0 24 24"><path d="M4 6h16"/><path d="M4 12h10"/><path d="M4 18h13"/></svg>',
       role: '<svg viewBox="0 0 24 24"><path d="M12 3l3 6 6 1-4.5 4.5L18 21l-6-3-6 3 1.5-6.5L3 10l6-1z"/></svg>',
@@ -863,28 +861,29 @@
       back: '<svg viewBox="0 0 24 24"><path d="M8 6h8l2 12H6z"/><path d="M12 6v12"/></svg>'
     };
 
-    // Gambar default per kategori (bisa di-override per item)
-    const IMAGE_URLS = {
-      hair: "https://tr.rbxcdn.com/180DAY-06ac539eca677ade575ef1e9284a0a60/420/420/HairAccessory/Webp/noFilter",
+    /* ---------- PLACEHOLDER GAMBAR ----------
+     *  Ini cuma default. Setiap item di REROLL_DATA di bawah
+     *  bisa punya "image" sendiri (URL-nya beda-beda).
+     * ---------------------------------------------------------------- */
+    const PLACEHOLDER = {
+      hair:     "https://tr.rbxcdn.com/180DAY-06ac539eca677ade575ef1e9284a0a60/420/420/HairAccessory/Webp/noFilter",
       faceType: "https://tr.rbxcdn.com/30DAY-DynamicHeadCostume-406AAB11E9D737D5CEBD213C443C27AB-Png/420/420/DynamicHeadCostume/Webp/noFilter",
-      shirt: "https://tr.rbxcdn.com/180DAY-acad9c2049b0a435449e779028ceed86/420/420/Shirt/Webp/noFilter",
-      pants: "https://tr.rbxcdn.com/180DAY-a197bc8f6f2a5f6dd5b089572a404/420/420/Pants/Webp/noFilter",
-      accessory: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter"
+      shirt:    "https://tr.rbxcdn.com/180DAY-acad9c2049b0a435449e779028ceed86/420/420/Shirt/Webp/noFilter",
+      pants:    "https://tr.rbxcdn.com/180DAY-a197bc8f6f2a5f6dd5b089572a402f46/420/420/Pants/Webp/noFilter",
+      accessory:"https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter"
     };
-    // fix typo pants
-    IMAGE_URLS.pants = "https://tr.rbxcdn.com/180DAY-a197bc8f6f2a5f6dd5b089572a402f46/420/420/Pants/Webp/noFilter";
 
-    /* ---------- SEMUA DATA ITEM ADA DI SINI ---------- */
+    /* ---------- DATA ITEM PER GENDER ----------
+     *  Setiap item punya field "image" (URL preview sendiri).
+     *  Kalau "image" tidak diisi, akan fallback ke PLACEHOLDER
+     *  berdasarkan kategori.
+     * ---------------------------------------------------------------- */
     const REROLL_DATA = {
       pria: [
         /* ============ IDENTITY ============ */
         {
-          group: "Identity",
-          type: "grouped",
-          id: "lastName",
-          title: "Last Name",
-          subtitle: "Nama Belakang",
-          icon: "lastName",
+          group: "Identity", type: "grouped", id: "lastName",
+          title: "Last Name", subtitle: "Nama Belakang", icon: "lastName",
           tiers: {
             common:   { names: ["", "Johnson", "Williams"] },
             uncommon: { names: ["Brown", "Jones", "Garcia"] },
@@ -894,12 +893,8 @@
           }
         },
         {
-          group: "Identity",
-          type: "grouped",
-          id: "role",
-          title: "Role",
-          subtitle: "Jurusan / Role",
-          icon: "role",
+          group: "Identity", type: "grouped", id: "role",
+          title: "Role", subtitle: "Jurusan / Role", icon: "role",
           tiers: {
             common:   { names: ["", "TPM", "TSM", "TBSM", "TITL", "Bisnis Digital", "Manajemen Perkantoran", "Akuntansi"] },
             uncommon: { names: ["DKV", "TBSM", "TEI", "FARMASI", "Animasi", "Desain Produk", "Teknik Pengelasan"] },
@@ -911,12 +906,8 @@
 
         /* ============ APPEARANCE ============ */
         {
-          group: "Appearance",
-          type: "grouped",
-          id: "height",
-          title: "Height",
-          subtitle: "Tinggi Badan (cm)",
-          icon: "height",
+          group: "Appearance", type: "grouped", id: "height",
+          title: "Height", subtitle: "Tinggi Badan (cm)", icon: "height",
           tiers: {
             common:   { names: ["130 – 140", "140 – 150"] },
             uncommon: { names: ["150 – 160", "120 – 130"] },
@@ -926,12 +917,8 @@
           }
         },
         {
-          group: "Appearance",
-          type: "color",
-          id: "skinColor",
-          title: "Skin Color",
-          subtitle: "Warna Kulit (RGB)",
-          icon: "skinColor",
+          group: "Appearance", type: "color", id: "skinColor",
+          title: "Skin Color", subtitle: "Warna Kulit (RGB)", icon: "skinColor",
           tiers: {
             common:   { value: "255.204.153" },
             uncommon: { value: "124.78.50" },
@@ -941,27 +928,19 @@
           }
         },
         {
-          group: "Appearance",
-          type: "item",
-          id: "hair",
-          title: "Hair",
-          subtitle: "Model Rambut",
-          icon: "hair",
-          image: "hair",
+          group: "Appearance", type: "item", id: "hair",
+          title: "Hair", subtitle: "Model Rambut", icon: "hair",
+          placeholder: "hair",  /* untuk fallback kalau item tidak punya image */
           items: [
-            { rarity: "common",   id: "98528599025378" },
-            { rarity: "uncommon", id: "135506916870785" },
-            { rarity: "epic",     id: "110619246329276" },
-            { rarity: "unknown",  id: "12" }
+            { rarity: "common",   id: "98528599025378",  image: "https://tr.rbxcdn.com/180DAY-06ac539eca677ade575ef1e9284a0a60/420/420/HairAccessory/Webp/noFilter" },
+            { rarity: "uncommon", id: "135506916870785", image: "https://tr.rbxcdn.com/180DAY-06ac539eca677ade575ef1e9284a0a60/420/420/HairAccessory/Webp/noFilter" },
+            { rarity: "epic",     id: "110619246329276", image: "https://tr.rbxcdn.com/180DAY-06ac539eca677ade575ef1e9284a0a60/420/420/HairAccessory/Webp/noFilter" },
+            { rarity: "unknown",  id: "12",              image: "https://tr.rbxcdn.com/180DAY-06ac539eca677ade575ef1e9284a0a60/420/420/HairAccessory/Webp/noFilter" }
           ]
         },
         {
-          group: "Appearance",
-          type: "color",
-          id: "hairColor",
-          title: "Hair Color",
-          subtitle: "Warna Rambut (RGB)",
-          icon: "hairColor",
+          group: "Appearance", type: "color", id: "hairColor",
+          title: "Hair Color", subtitle: "Warna Rambut (RGB)", icon: "hairColor",
           tiers: {
             common:   { value: "85.56.102" },
             uncommon: { value: "200.120.80" },
@@ -971,114 +950,83 @@
           }
         },
         {
-          group: "Appearance",
-          type: "item",
-          id: "faceType",
-          title: "Face Type",
-          subtitle: "Tipe Wajah",
-          icon: "faceType",
-          image: "faceType",
+          group: "Appearance", type: "item", id: "faceType",
+          title: "Face Type", subtitle: "Tipe Wajah", icon: "faceType",
+          placeholder: "faceType",
           items: [
-            { rarity: "common",  id: "110496664617589" },
-            { rarity: "epic",    id: "188976304927401" },
-            { rarity: "legend",  id: "186755253423235" },
-            { rarity: "unknown", id: "273360413038359" }
+            { rarity: "common",  id: "110496664617589", image: "https://tr.rbxcdn.com/30DAY-DynamicHeadCostume-406AAB11E9D737D5CEBD213C443C27AB-Png/420/420/DynamicHeadCostume/Webp/noFilter" },
+            { rarity: "epic",    id: "188976304927401", image: "https://tr.rbxcdn.com/30DAY-DynamicHeadCostume-406AAB11E9D737D5CEBD213C443C27AB-Png/420/420/DynamicHeadCostume/Webp/noFilter" },
+            { rarity: "legend",  id: "186755253423235", image: "https://tr.rbxcdn.com/30DAY-DynamicHeadCostume-406AAB11E9D737D5CEBD213C443C27AB-Png/420/420/DynamicHeadCostume/Webp/noFilter" },
+            { rarity: "unknown", id: "273360413038359", image: "https://tr.rbxcdn.com/30DAY-DynamicHeadCostume-406AAB11E9D737D5CEBD213C443C27AB-Png/420/420/DynamicHeadCostume/Webp/noFilter" }
           ]
         },
         {
-          group: "Appearance",
-          type: "uniform",
-          id: "uniform",
-          title: "Uniform",
-          subtitle: "Shirt + Pants (Satu Set)",
-          icon: "uniform",
+          group: "Appearance", type: "uniform", id: "uniform",
+          title: "Uniform", subtitle: "Shirt + Pants (Satu Set)", icon: "uniform",
+          placeholder: { shirt: "shirt", pants: "pants" },
           items: [
             {
               rarity: "common",
               name: "Recruit Set",
-              shirt: { name: "Recruit Set", id: "16810410386" },
-              pants: { name: "Recruit Set", id: "8854324984" }
+              shirt: { name: "Recruit Set", id: "16810410386", image: "https://tr.rbxcdn.com/180DAY-acad9c2049b0a435449e779028ceed86/420/420/Shirt/Webp/noFilter" },
+              pants: { name: "Recruit Set", id: "8854324984",  image: "https://tr.rbxcdn.com/180DAY-a197bc8f6f2a5f6dd5b089572a402f46/420/420/Pants/Webp/noFilter" }
             }
           ]
         },
 
         /* ============ ACCESSORIES ============ */
         {
-          group: "Accessories",
-          type: "item",
-          id: "headAcc",
-          title: "Head Aksesoris",
-          subtitle: "Aksesoris Kepala",
-          icon: "head",
-          image: "accessory",
+          group: "Accessories", type: "item", id: "headAcc",
+          title: "Head Aksesoris", subtitle: "Aksesoris Kepala", icon: "head",
+          placeholder: "accessory",
           items: [
-            { rarity: "common",   id: "12092086350" },
-            { rarity: "uncommon", id: "6001" }
+            { rarity: "common",   id: "12092086350", image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" },
+            { rarity: "uncommon", id: "6001",        image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" }
           ]
         },
         {
-          group: "Accessories",
-          type: "item",
-          id: "faceAcc",
-          title: "Face Aksesoris",
-          subtitle: "Aksesoris Wajah",
-          icon: "face",
-          image: "accessory",
+          group: "Accessories", type: "item", id: "faceAcc",
+          title: "Face Aksesoris", subtitle: "Aksesoris Wajah", icon: "face",
+          placeholder: "accessory",
           items: [
-            { rarity: "common",   id: "17165131496" },
-            { rarity: "uncommon", id: "1201" }
+            { rarity: "common",   id: "17165131496", image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" },
+            { rarity: "uncommon", id: "1201",        image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" }
           ]
         },
         {
-          group: "Accessories",
-          type: "item",
-          id: "neckAcc",
-          title: "Neck Aksesoris",
-          subtitle: "Aksesoris Leher",
-          icon: "neck",
-          image: "accessory",
+          group: "Accessories", type: "item", id: "neckAcc",
+          title: "Neck Aksesoris", subtitle: "Aksesoris Leher", icon: "neck",
+          placeholder: "accessory",
           items: [
-            { rarity: "common",   id: "138149169311809" },
-            { rarity: "uncommon", id: "2201" }
+            { rarity: "common",   id: "138149169311809", image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" },
+            { rarity: "uncommon", id: "2201",            image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" }
           ]
         },
         {
-          group: "Accessories",
-          type: "item",
-          id: "armAcc",
-          title: "Arm Aksesoris",
-          subtitle: "Aksesoris Lengan",
-          icon: "arm",
-          image: "accessory",
+          group: "Accessories", type: "item", id: "armAcc",
+          title: "Arm Aksesoris", subtitle: "Aksesoris Lengan", icon: "arm",
+          placeholder: "accessory",
           items: [
-            { rarity: "common",   id: "79870665394807" },
-            { rarity: "uncommon", id: "3201" }
+            { rarity: "common",   id: "79870665394807", image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" },
+            { rarity: "uncommon", id: "3201",           image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" }
           ]
         },
         {
-          group: "Accessories",
-          type: "item",
-          id: "waistAcc",
-          title: "Waist Aksesoris",
-          subtitle: "Aksesoris Pinggang",
-          icon: "waist",
-          image: "accessory",
+          group: "Accessories", type: "item", id: "waistAcc",
+          title: "Waist Aksesoris", subtitle: "Aksesoris Pinggang", icon: "waist",
+          placeholder: "accessory",
           items: [
-            { rarity: "common",   id: "106356059591579" },
-            { rarity: "uncommon", id: "5201" }
+            { rarity: "common",   id: "106356059591579", image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" },
+            { rarity: "uncommon", id: "5201",            image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" }
           ]
         },
         {
-          group: "Accessories",
-          type: "item",
-          id: "backAcc",
-          title: "Back Aksesoris",
-          subtitle: "Aksesoris Punggung",
-          icon: "back",
-          image: "accessory",
+          group: "Accessories", type: "item", id: "backAcc",
+          title: "Back Aksesoris", subtitle: "Aksesoris Punggung", icon: "back",
+          placeholder: "accessory",
           items: [
-            { rarity: "common",   id: "103486592724790" },
-            { rarity: "uncommon", id: "4201" }
+            { rarity: "common",   id: "103486592724790", image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" },
+            { rarity: "uncommon", id: "4201",            image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" }
           ]
         }
       ],
@@ -1086,12 +1034,8 @@
       wanita: [
         /* ============ IDENTITY ============ */
         {
-          group: "Identity",
-          type: "grouped",
-          id: "lastName",
-          title: "Last Name",
-          subtitle: "Nama Belakang",
-          icon: "lastName",
+          group: "Identity", type: "grouped", id: "lastName",
+          title: "Last Name", subtitle: "Nama Belakang", icon: "lastName",
           tiers: {
             common:   { names: ["Smith", "son", "Williams"] },
             uncommon: { names: ["Taylor", "Anderson", "Thomas"] },
@@ -1101,12 +1045,8 @@
           }
         },
         {
-          group: "Identity",
-          type: "grouped",
-          id: "role",
-          title: "Role",
-          subtitle: "Jurusan / Role",
-          icon: "role",
+          group: "Identity", type: "grouped", id: "role",
+          title: "Role", subtitle: "Jurusan / Role", icon: "role",
           tiers: {
             common:   { names: ["", "TPM", "TSM", "TBSM", "TITL", "Bisnis Digital", "Manajemen Perkantoran", "Akuntansi"] },
             uncommon: { names: ["DKV", "TBSM", "TEI", "FARMASI", "Animasi", "Desain Produk", "Teknik Pengelasan"] },
@@ -1118,12 +1058,8 @@
 
         /* ============ APPEARANCE ============ */
         {
-          group: "Appearance",
-          type: "grouped",
-          id: "height",
-          title: "Height",
-          subtitle: "Tinggi Badan (cm)",
-          icon: "height",
+          group: "Appearance", type: "grouped", id: "height",
+          title: "Height", subtitle: "Tinggi Badan (cm)", icon: "height",
           tiers: {
             common:   { names: ["130 – 140", "140 – 150"] },
             uncommon: { names: ["150 – 160", "120 – 130"] },
@@ -1133,12 +1069,8 @@
           }
         },
         {
-          group: "Appearance",
-          type: "color",
-          id: "skinColor",
-          title: "Skin Color",
-          subtitle: "Warna Kulit (RGB)",
-          icon: "skinColor",
+          group: "Appearance", type: "color", id: "skinColor",
+          title: "Skin Color", subtitle: "Warna Kulit (RGB)", icon: "skinColor",
           tiers: {
             common:   { value: "255.204.153" },
             uncommon: { value: "124.78.50" },
@@ -1148,27 +1080,19 @@
           }
         },
         {
-          group: "Appearance",
-          type: "item",
-          id: "hair",
-          title: "Hair",
-          subtitle: "Model Rambut",
-          icon: "hair",
-          image: "hair",
+          group: "Appearance", type: "item", id: "hair",
+          title: "Hair", subtitle: "Model Rambut", icon: "hair",
+          placeholder: "hair",
           items: [
-            { rarity: "common",   id: "0" },
-            { rarity: "uncommon", id: "15219402962" },
-            { rarity: "epic",     id: "128817841068722" },
-            { rarity: "unknown",  id: "25" }
+            { rarity: "common",   id: "0",              image: "https://tr.rbxcdn.com/180DAY-06ac539eca677ade575ef1e9284a0a60/420/420/HairAccessory/Webp/noFilter" },
+            { rarity: "uncommon", id: "15219402962",    image: "https://tr.rbxcdn.com/180DAY-06ac539eca677ade575ef1e9284a0a60/420/420/HairAccessory/Webp/noFilter" },
+            { rarity: "epic",     id: "128817841068722",image: "https://tr.rbxcdn.com/180DAY-06ac539eca677ade575ef1e9284a0a60/420/420/HairAccessory/Webp/noFilter" },
+            { rarity: "unknown",  id: "25",             image: "https://tr.rbxcdn.com/180DAY-06ac539eca677ade575ef1e9284a0a60/420/420/HairAccessory/Webp/noFilter" }
           ]
         },
         {
-          group: "Appearance",
-          type: "color",
-          id: "hairColor",
-          title: "Hair Color",
-          subtitle: "Warna Rambut (RGB)",
-          icon: "hairColor",
+          group: "Appearance", type: "color", id: "hairColor",
+          title: "Hair Color", subtitle: "Warna Rambut (RGB)", icon: "hairColor",
           tiers: {
             common:   { value: "85.56.102" },
             uncommon: { value: "200.120.80" },
@@ -1178,121 +1102,90 @@
           }
         },
         {
-          group: "Appearance",
-          type: "item",
-          id: "faceType",
-          title: "Face Type",
-          subtitle: "Tipe Wajah",
-          icon: "faceType",
-          image: "faceType",
+          group: "Appearance", type: "item", id: "faceType",
+          title: "Face Type", subtitle: "Tipe Wajah", icon: "faceType",
+          placeholder: "faceType",
           items: [
-            { rarity: "common",  id: "157757222154606" },
-            { rarity: "epic",    id: "258523744380054" },
-            { rarity: "legend",  id: "132921897850212" },
-            { rarity: "unknown", id: "273360413038359" }
+            { rarity: "common",  id: "157757222154606", image: "https://tr.rbxcdn.com/30DAY-DynamicHeadCostume-406AAB11E9D737D5CEBD213C443C27AB-Png/420/420/DynamicHeadCostume/Webp/noFilter" },
+            { rarity: "epic",    id: "258523744380054", image: "https://tr.rbxcdn.com/30DAY-DynamicHeadCostume-406AAB11E9D737D5CEBD213C443C27AB-Png/420/420/DynamicHeadCostume/Webp/noFilter" },
+            { rarity: "legend",  id: "132921897850212", image: "https://tr.rbxcdn.com/30DAY-DynamicHeadCostume-406AAB11E9D737D5CEBD213C443C27AB-Png/420/420/DynamicHeadCostume/Webp/noFilter" },
+            { rarity: "unknown", id: "273360413038359", image: "https://tr.rbxcdn.com/30DAY-DynamicHeadCostume-406AAB11E9D737D5CEBD213C443C27AB-Png/420/420/DynamicHeadCostume/Webp/noFilter" }
           ]
         },
         {
-          group: "Appearance",
-          type: "uniform",
-          id: "uniform",
-          title: "Uniform",
-          subtitle: "Shirt + Pants (Satu Set)",
-          icon: "uniform",
+          group: "Appearance", type: "uniform", id: "uniform",
+          title: "Uniform", subtitle: "Shirt + Pants (Satu Set)", icon: "uniform",
+          placeholder: { shirt: "shirt", pants: "pants" },
           items: [
             {
               rarity: "common",
               name: "Scout Set",
-              shirt: { name: "Scout Set", id: "1006" },
-              pants: { name: "Scout Set", id: "2006" }
+              shirt: { name: "Scout Set", id: "1006", image: "https://tr.rbxcdn.com/180DAY-acad9c2049b0a435449e779028ceed86/420/420/Shirt/Webp/noFilter" },
+              pants: { name: "Scout Set", id: "2006", image: "https://tr.rbxcdn.com/180DAY-a197bc8f6f2a5f6dd5b089572a402f46/420/420/Pants/Webp/noFilter" }
             }
           ]
         },
 
         /* ============ ACCESSORIES ============ */
         {
-          group: "Accessories",
-          type: "item",
-          id: "headAcc",
-          title: "Head Aksesoris",
-          subtitle: "Aksesoris Kepala",
-          icon: "head",
-          image: "accessory",
+          group: "Accessories", type: "item", id: "headAcc",
+          title: "Head Aksesoris", subtitle: "Aksesoris Kepala", icon: "head",
+          placeholder: "accessory",
           items: [
-            { rarity: "common",   id: "12092086350" },
-            { rarity: "uncommon", id: "6002" }
+            { rarity: "common",   id: "12092086350", image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" },
+            { rarity: "uncommon", id: "6002",        image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" }
           ]
         },
         {
-          group: "Accessories",
-          type: "item",
-          id: "faceAcc",
-          title: "Face Aksesoris",
-          subtitle: "Aksesoris Wajah",
-          icon: "face",
-          image: "accessory",
+          group: "Accessories", type: "item", id: "faceAcc",
+          title: "Face Aksesoris", subtitle: "Aksesoris Wajah", icon: "face",
+          placeholder: "accessory",
           items: [
-            { rarity: "common",   id: "17165131496" },
-            { rarity: "uncommon", id: "1202" }
+            { rarity: "common",   id: "17165131496", image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" },
+            { rarity: "uncommon", id: "1202",        image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" }
           ]
         },
         {
-          group: "Accessories",
-          type: "item",
-          id: "neckAcc",
-          title: "Neck Aksesoris",
-          subtitle: "Aksesoris Leher",
-          icon: "neck",
-          image: "accessory",
+          group: "Accessories", type: "item", id: "neckAcc",
+          title: "Neck Aksesoris", subtitle: "Aksesoris Leher", icon: "neck",
+          placeholder: "accessory",
           items: [
-            { rarity: "common",   id: "138149169311809" },
-            { rarity: "uncommon", id: "2202" }
+            { rarity: "common",   id: "138149169311809", image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" },
+            { rarity: "uncommon", id: "2202",            image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" }
           ]
         },
         {
-          group: "Accessories",
-          type: "item",
-          id: "armAcc",
-          title: "Arm Aksesoris",
-          subtitle: "Aksesoris Lengan",
-          icon: "arm",
-          image: "accessory",
+          group: "Accessories", type: "item", id: "armAcc",
+          title: "Arm Aksesoris", subtitle: "Aksesoris Lengan", icon: "arm",
+          placeholder: "accessory",
           items: [
-            { rarity: "common",   id: "79870665394807" },
-            { rarity: "uncommon", id: "3202" }
+            { rarity: "common",   id: "79870665394807", image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" },
+            { rarity: "uncommon", id: "3202",           image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" }
           ]
         },
         {
-          group: "Accessories",
-          type: "item",
-          id: "waistAcc",
-          title: "Waist Aksesoris",
-          subtitle: "Aksesoris Pinggang",
-          icon: "waist",
-          image: "accessory",
+          group: "Accessories", type: "item", id: "waistAcc",
+          title: "Waist Aksesoris", subtitle: "Aksesoris Pinggang", icon: "waist",
+          placeholder: "accessory",
           items: [
-            { rarity: "common",   id: "5103" },
-            { rarity: "uncommon", id: "5202" }
+            { rarity: "common",   id: "5103", image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" },
+            { rarity: "uncommon", id: "5202", image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" }
           ]
         },
         {
-          group: "Accessories",
-          type: "item",
-          id: "backAcc",
-          title: "Back Aksesoris",
-          subtitle: "Aksesoris Punggung",
-          icon: "back",
-          image: "accessory",
+          group: "Accessories", type: "item", id: "backAcc",
+          title: "Back Aksesoris", subtitle: "Aksesoris Punggung", icon: "back",
+          placeholder: "accessory",
           items: [
-            { rarity: "common",   id: "103486592724790" },
-            { rarity: "uncommon", id: "4202" }
+            { rarity: "common",   id: "103486592724790", image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" },
+            { rarity: "uncommon", id: "4202",            image: "https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter" }
           ]
         }
       ]
     };
 
     /* ================================================================
-     *  RENDER ENGINE — jangan diubah kecuali perlu
+     *  RENDER ENGINE
      * ================================================================ */
 
     const TIER_LABEL = {
@@ -1300,24 +1193,31 @@
       legend: "Legend", unknown: "???"
     };
 
-    // RGB string -> hex helper untuk swatch preview
     function rgbPreview(rgbStr) {
       const p = rgbStr.split(".").map(n => parseInt(n, 10));
       if (p.length !== 3 || p.some(n => isNaN(n))) return "#000";
       return `rgb(${p[0]},${p[1]},${p[2]})`;
     }
 
+    /* Ambil URL gambar item — prioritas: item.image → placeholder kategori */
+    function resolveImage(item, section, slot) {
+      if (item && item.image) return item.image;
+      if (section && section.placeholder) {
+        const ph = section.placeholder;
+        if (typeof ph === "string") return PLACEHOLDER[ph] || "";
+        if (typeof ph === "object" && slot && ph[slot]) return PLACEHOLDER[ph[slot]] || "";
+      }
+      return "";
+    }
+
     const COPY_ICON = '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
 
     function copyBtn(value, mini = false) {
-      return `<button class="copy-btn${mini ? ' mini' : ''}" data-copy="${escapeAttr(value)}">${COPY_ICON}${mini ? '' : 'Salin'}</button>`;
+      const safe = String(value).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+      return `<button class="copy-btn${mini ? ' mini' : ''}" data-copy="${safe}">${COPY_ICON}${mini ? '' : 'Salin'}</button>`;
     }
 
-    function escapeAttr(s) {
-      return String(s).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-    }
-
-    /* -------- Render: grouped card (Last Name / Role / Height) -------- */
+    /* -------- Grouped card -------- */
     function renderGroupedCard(section) {
       const tierOrder = ["common", "uncommon", "epic", "legend", "unknown"];
       return tierOrder.filter(t => section.tiers[t]).map(tier => {
@@ -1337,7 +1237,7 @@
       }).join("");
     }
 
-    /* -------- Render: color card (Skin Color / Hair Color) -------- */
+    /* -------- Color card -------- */
     function renderColorCard(section) {
       const tierOrder = ["common", "uncommon", "epic", "legend", "unknown"];
       return tierOrder.filter(t => section.tiers[t]).map(tier => {
@@ -1359,66 +1259,72 @@
       }).join("");
     }
 
-    /* -------- Render: item card (Hair / Face Type / Accessories) -------- */
+    /* -------- Item card (Hair / Face Type / Accessories) -------- */
     function renderItemCard(section) {
-      const img = IMAGE_URLS[section.image] || "";
-      return section.items.map(it => `
-        <article class="card" data-rarity="${it.rarity}">
-          <div class="image-wrapper">
-            <span class="rarity-badge float ${it.rarity}">${TIER_LABEL[it.rarity]}</span>
-            <img src="${img}" alt="${section.title} ${it.id}" loading="lazy">
-          </div>
-          <div class="card-content">
-            <div class="id-row">
-              <span class="id-text">${it.id}</span>
-              ${copyBtn(it.id)}
+      return section.items.map(it => {
+        const img = resolveImage(it, section);
+        return `
+          <article class="card" data-rarity="${it.rarity}">
+            <div class="image-wrapper">
+              <span class="rarity-badge float ${it.rarity}">${TIER_LABEL[it.rarity]}</span>
+              <img src="${img}" alt="${section.title} ${it.id}" loading="lazy">
             </div>
-          </div>
-        </article>
-      `).join("");
+            <div class="card-content">
+              <div class="id-row">
+                <span class="id-text">${it.id}</span>
+                ${copyBtn(it.id)}
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
     }
 
-    /* -------- Render: uniform card -------- */
+    /* -------- Uniform card -------- */
     function renderUniformCard(section) {
-      return section.items.map(it => `
-        <article class="card" data-rarity="${it.rarity}">
-          <div class="image-wrapper dual">
-            <span class="slot-badge">Set</span>
-            <span class="rarity-badge float ${it.rarity}">${TIER_LABEL[it.rarity]}</span>
-            <div class="img-cell">
-              <span class="slot-badge mini">Shirt</span>
-              <img src="${IMAGE_URLS.shirt}" alt="${it.shirt.name} Shirt" loading="lazy">
-            </div>
-            <div class="img-cell">
-              <span class="slot-badge mini">Pants</span>
-              <img src="${IMAGE_URLS.pants}" alt="${it.pants.name} Pants" loading="lazy">
-            </div>
-          </div>
-          <div class="card-content">
-            <div class="id-list">
-              <div class="id-item">
-                <div class="id-item-head"><span class="dot"></span>Shirt · ${it.name}</div>
-                <div class="id-item-body">
-                  <span class="name">${it.shirt.name}</span>
-                  <span class="id-text">${it.shirt.id}</span>
-                  ${copyBtn(it.shirt.id, true)}
-                </div>
+      return section.items.map(it => {
+        const shirtImg = resolveImage(it.shirt, section, "shirt");
+        const pantsImg = resolveImage(it.pants, section, "pants");
+        return `
+          <article class="card" data-rarity="${it.rarity}">
+            <div class="image-wrapper dual">
+              <span class="slot-badge">Set</span>
+              <span class="rarity-badge float ${it.rarity}">${TIER_LABEL[it.rarity]}</span>
+              <div class="img-cell">
+                <span class="slot-badge mini">Shirt</span>
+                <img src="${shirtImg}" alt="${it.shirt.name} Shirt" loading="lazy">
               </div>
-              <div class="id-item">
-                <div class="id-item-head"><span class="dot"></span>Pants · ${it.name}</div>
-                <div class="id-item-body">
-                  <span class="name">${it.pants.name}</span>
-                  <span class="id-text">${it.pants.id}</span>
-                  ${copyBtn(it.pants.id, true)}
-                </div>
+              <div class="img-cell">
+                <span class="slot-badge mini">Pants</span>
+                <img src="${pantsImg}" alt="${it.pants.name} Pants" loading="lazy">
               </div>
             </div>
-          </div>
-        </article>
-      `).join("");
+            <div class="card-content">
+              <div class="id-list">
+                <div class="id-item">
+                  <div class="id-item-head"><span class="dot"></span>Shirt · ${it.name}</div>
+                  <div class="id-item-body">
+                    <span class="name">${it.shirt.name}</span>
+                    <span class="id-text">${it.shirt.id}</span>
+                    ${copyBtn(it.shirt.id, true)}
+                  </div>
+                </div>
+                <div class="id-item">
+                  <div class="id-item-head"><span class="dot"></span>Pants · ${it.name}</div>
+                  <div class="id-item-body">
+                    <span class="name">${it.pants.name}</span>
+                    <span class="id-text">${it.pants.id}</span>
+                    ${copyBtn(it.pants.id, true)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
     }
 
-    /* -------- Render: satu section -------- */
+    /* -------- Render section -------- */
     function renderSection(section) {
       let gridContent, countLabel, gridClass = "grid-container";
 
@@ -1458,9 +1364,8 @@
       `;
     }
 
-    /* -------- Render: satu panel (satu gender) -------- */
+    /* -------- Render panel per gender -------- */
     function renderPanel(genderKey, sections, isActive) {
-      // Group by "group"
       const groups = [];
       const groupMap = {};
       sections.forEach(s => {
@@ -1487,9 +1392,8 @@
       return `<div class="view-panel${isActive ? " active" : ""}" id="panel-${genderKey}" data-gender="${genderKey}">${html}</div>`;
     }
 
-    /* -------- Init: build semua panel + tombol gender -------- */
+    /* -------- Init -------- */
     function init() {
-      // Tombol gender
       const genderLabels = { pria: "Pria", wanita: "Wanita" };
       const genderIcons = {
         pria: '<svg viewBox="0 0 24 24"><circle cx="10" cy="14" r="5"/><path d="M19 5l-5.4 5.4"/><path d="M14 5h5v5"/></svg>',
@@ -1504,14 +1408,11 @@
         </button>
       `).join("");
 
-      // Panel
       const panelsHTML = genders.map((g, i) => renderPanel(g, REROLL_DATA[g], i === 0)).join("");
       document.getElementById("panelsContainer").innerHTML = panelsHTML;
 
-      // Update count
       updateGenderCount(genders[0]);
 
-      // Event listener gender
       document.querySelectorAll(".gender-btn").forEach(btn => {
         btn.addEventListener("click", () => {
           const target = btn.dataset.target;
@@ -1532,12 +1433,9 @@
         });
       });
 
-      // Event listener copy (delegated)
       document.body.addEventListener("click", (e) => {
         const btn = e.target.closest("[data-copy]");
-        if (btn) {
-          copyId(btn, btn.dataset.copy);
-        }
+        if (btn) copyId(btn, btn.dataset.copy);
       });
     }
 
