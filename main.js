@@ -78,25 +78,45 @@
   }
 
   /* ---------- Render: color card ---------- */
-  function renderColorCard(section) {
-    const tierOrder = ["common", "uncommon", "epic", "legend", "unknown"];
-    return tierOrder.filter(t => section.tiers[t]).map(tier => {
-      const value = section.tiers[tier].value;
-      return `
-        <article class="card" data-rarity="${tier}">
+/* ---------- Render: color card (mendukung multi-value per tier) ---------- */
+function renderColorCard(section) {
+  const tierOrder = ["common", "uncommon", "epic", "legend", "unknown"];
+  let html = "";
+
+  tierOrder.forEach(tier => {
+    const tierData = section.tiers[tier];
+    if (!tierData) return;
+
+    // Support 2 format: { value: "..." } (single) atau { values: [...] } (multi)
+    let values = [];
+    if (Array.isArray(tierData.values)) {
+      values = tierData.values;
+    } else if (tierData.value) {
+      values = [{ value: tierData.value, label: tierData.label || "" }];
+    }
+
+    values.forEach((v, idx) => {
+      const labelAttr = v.label ? ` title="${v.label}"` : "";
+      const labelHtml = v.label ? `<div class="color-label">${v.label}</div>` : "";
+      html += `
+        <article class="card" data-rarity="${tier}"${labelAttr}>
           <div class="swatch-wrapper">
             <span class="rarity-badge float ${tier}">${TIER_LABEL[tier]}</span>
-            <div class="swatch-circle" style="background:${rgbPreview(value)};"></div>
+            <div class="swatch-circle" style="background:${rgbPreview(v.value)};"></div>
+            ${labelHtml}
           </div>
           <div class="card-content">
             <div class="id-row no-border">
-              <span class="id-text">${value}</span>
-              ${copyBtn(value)}
+              <span class="id-text">${v.value}</span>
+              ${copyBtn(v.value)}
             </div>
           </div>
         </article>`;
-    }).join("");
-  }
+    });
+  });
+
+  return html;
+}
 
   /* ---------- Render: item card ---------- */
   function renderItemCard(section) {
@@ -168,10 +188,16 @@
       gridClass += " wide";
       const totalNames = Object.values(section.tiers).reduce((sum, t) => sum + (t.names ? t.names.length : 0), 0);
       countLabel = `${totalNames} items`;
-    } else if (section.type === "color") {
-      gridContent = renderColorCard(section);
-      countLabel = `${Object.keys(section.tiers).length} items`;
-    } else if (section.type === "uniform") {
+} else if (section.type === "color") {
+  gridContent = renderColorCard(section);
+  // Hitung total value (bisa lebih dari 1 per tier)
+  const total = Object.values(section.tiers).reduce((sum, t) => {
+    if (Array.isArray(t.values)) return sum + t.values.length;
+    if (t.value) return sum + 1;
+    return sum;
+  }, 0);
+  countLabel = `${total} items`;
+} else if (section.type === "uniform") {
       gridContent = renderUniformCard(section);
       gridClass += " wide";
       countLabel = `${section.items.length} set`;
