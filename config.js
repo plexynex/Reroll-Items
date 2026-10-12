@@ -41,11 +41,11 @@ window.INFO_CONFIG = {
       icon: '<svg viewBox="0 0 24 24"><circle cx="10" cy="14" r="5"/><path d="M19 5l-5.4 5.4"/><path d="M14 5h5v5"/></svg>',
       new: "no",
       text: `Update terbaru untuk Male:
-• Menambahkan beberapa item baru di slot Hair dan Head Accessory.
-• Menyesuaikan rarity beberapa item agar lebih seimbang.
-• Memperbaiki bug pada preview Face Type.
-• Menambahkan variasi warna untuk Skin Color tier Legend.
-Silakan cek kembali daftar item di atas untuk melihat perubahan.`
+• 
+• 
+• 
+• 
+Silakan cek kembali daftar items untuk melihat perubahan.`
     },
     {
       key: "female",
@@ -53,11 +53,11 @@ Silakan cek kembali daftar item di atas untuk melihat perubahan.`
       icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="5"/><path d="M12 14v7"/><path d="M9 18h6"/></svg>',
       new: "no",
       text: `Update terbaru untuk Female:
-• Menambahkan set Uniform baru dengan rarity Epic.
-• Memperbarui gambar preview untuk beberapa Hair Accessory.
-• Menambahkan item Face Type tier Legend.
-• Menyesuaikan warna Skin Color agar lebih natural.
-Perubahan berlaku otomatis setelah halaman di-refresh.`
+• 
+• 
+• 
+• 
+Silakan cek kembali daftar items untuk melihat perubahan.`
     }
   ]
 };
