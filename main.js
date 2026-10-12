@@ -1,4 +1,38 @@
 /* ================================================================
+ *  SERVICE WORKER REGISTRATION
+ * ================================================================ */
+function registerServiceWorker() {
+  if (!("serviceWorker" in navigator)) {
+    console.warn("[SW] Browser tidak mendukung Service Worker");
+    return;
+  }
+
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js")
+      .then((reg) => {
+        console.log("[SW] Terdaftar, scope:", reg.scope);
+
+        // Deteksi update Service Worker
+        reg.addEventListener("updatefound", () => {
+          const newWorker = reg.installing;
+          newWorker.addEventListener("statechange", () => {
+            if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+              console.log("[SW] Versi baru tersedia. Refresh untuk update.");
+              // Optional: tampilkan toast ke user
+              // showToast("Update tersedia, refresh untuk memuat versi baru");
+            }
+          });
+        });
+      })
+      .catch((err) => {
+        console.warn("[SW] Gagal mendaftar:", err);
+      });
+  });
+}
+
+/* Panggil di awal */
+registerServiceWorker();
+/* ================================================================
  *  main.js
  *  Berisi: Render engine + Init + Copy + Toast + Modal Info
  *  HARUS di-load SETELAH config.js dan configData.js
