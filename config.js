@@ -25,10 +25,10 @@ window.ICONS = {
 /* ---------- PLACEHOLDER GAMBAR (default fallback) ---------- */
 window.PLACEHOLDER = {
   hair:     "https://tr.rbxcdn.com/180DAY-06ac539eca677ade575ef1e9284a0a60/420/420/HairAccessory/Webp/noFilter",
-  faceType: "https://tr.rbxcdn.com/30DAY-DynamicHeadCostume-406AAB11E9D737D5CEBD213C443C27AB-Png/420/420/DynamicHeadCostume/Webp/noFilter",
+  faceType: "https://tr.rbxcdn.com/30DAY-DynamicHeadCostume-47D19402F5B1252E83EFE407A1258A0A-Png/420/420/DynamicHeadCostume/Webp/noFilter",
   shirt:    "https://tr.rbxcdn.com/180DAY-acad9c2049b0a435449e779028ceed86/420/420/Shirt/Webp/noFilter",
   pants:    "https://tr.rbxcdn.com/180DAY-a197bc8f6f2a5f6dd5b089572a402f46/420/420/Pants/Webp/noFilter",
-  accessory:"https://tr.rbxcdn.com/180DAY-bc86b3a7735ae00a6afb369ffcca0b86/420/420/Hat/Webp/noFilter"
+  accessory:"https://tr.rbxcdn.com/180DAY-64532153db44c1783a8055d65f8ad1f9/420/420/FaceAccessory/Webp/noFilter"
 };
 
 /* ---------- INFO MODAL ---------- */
@@ -39,7 +39,7 @@ window.INFO_CONFIG = {
       key: "male",
       title: "Male",
       icon: '<svg viewBox="0 0 24 24"><circle cx="10" cy="14" r="5"/><path d="M19 5l-5.4 5.4"/><path d="M14 5h5v5"/></svg>',
-      new: "yes",
+      new: "no",
       text: `Update terbaru untuk Male:
 • Menambahkan beberapa item baru di slot Hair dan Head Accessory.
 • Menyesuaikan rarity beberapa item agar lebih seimbang.
