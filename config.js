@@ -26,8 +26,8 @@ window.ICONS = {
 window.PLACEHOLDER = {
   hair:     "https://tr.rbxcdn.com/180DAY-06ac539eca677ade575ef1e9284a0a60/420/420/HairAccessory/Webp/noFilter",
   faceType: "https://tr.rbxcdn.com/30DAY-DynamicHeadCostume-47D19402F5B1252E83EFE407A1258A0A-Png/420/420/DynamicHeadCostume/Webp/noFilter",
-  shirt:    "https://tr.rbxcdn.com/180DAY-acad9c2049b0a435449e779028ceed86/420/420/Shirt/Webp/noFilter",
-  pants:    "https://tr.rbxcdn.com/180DAY-a197bc8f6f2a5f6dd5b089572a402f46/420/420/Pants/Webp/noFilter",
+  shirt:    "https://tr.rbxcdn.com/180DAY-3fcb9bf770d8d64b3a2ab6ed1213f8c0/420/420/Shirt/Webp/noFilter",
+  pants:    "https://tr.rbxcdn.com/180DAY-548d1973a051f1b357d6df96963b6f4f/420/420/Pants/Webp/noFilter",
   accessory:"https://tr.rbxcdn.com/180DAY-64532153db44c1783a8055d65f8ad1f9/420/420/FaceAccessory/Webp/noFilter"
 };
 

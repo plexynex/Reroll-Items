@@ -608,6 +608,54 @@
     .chip.muted { font-style: italic; color: var(--text-muted); }
 
     /* ============================================================
+   GROUPED CARD — lebih lega
+   ============================================================ */
+.grouped-card {
+  padding: 1.25rem 1.4rem 1.4rem;   /* sebelumnya 1rem 1.15rem 1.15rem */
+  gap: 1rem;
+}
+
+.grouped-card-title {
+  font-size: 0.78rem;                /* sebelumnya 0.72rem */
+  letter-spacing: 0.16em;
+}
+
+.grouped-card-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;                       /* sebelumnya 0.5rem */
+}
+
+/* ============================================================
+   GRID — lebih lebar untuk grouped card
+   ============================================================ */
+/* Grid biasa (untuk item card) */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+/* Grid wide (untuk grouped card multi-tier) */
+.grid-container.wide {
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+}
+
+/* Grid wide yang isinya cuma 1 card → full width */
+.grid-container.wide:has(> .grouped-card:only-child) {
+  grid-template-columns: 1fr;
+}
+
+/* Chip nama full-width card */
+.grouped-card .grouped-card-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  /* Optional: kalau mau rata kiri dengan ukuran seragam */
+  /* align-items: flex-start; */
+}
+
+    /* ============================================================
        RARITY BADGE
        ============================================================ */
     .rarity-badge {
