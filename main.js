@@ -1,40 +1,6 @@
 /* ================================================================
- *  SERVICE WORKER REGISTRATION
- * ================================================================ */
-function registerServiceWorker() {
-  if (!("serviceWorker" in navigator)) {
-    console.warn("[SW] Browser tidak mendukung Service Worker");
-    return;
-  }
-
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js")
-      .then((reg) => {
-        console.log("[SW] Terdaftar, scope:", reg.scope);
-
-        // Deteksi update Service Worker
-        reg.addEventListener("updatefound", () => {
-          const newWorker = reg.installing;
-          newWorker.addEventListener("statechange", () => {
-            if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-              console.log("[SW] Versi baru tersedia. Refresh untuk update.");
-              // Optional: tampilkan toast ke user
-              // showToast("Update tersedia, refresh untuk memuat versi baru");
-            }
-          });
-        });
-      })
-      .catch((err) => {
-        console.warn("[SW] Gagal mendaftar:", err);
-      });
-  });
-}
-
-/* Panggil di awal */
-registerServiceWorker();
-/* ================================================================
  *  main.js
- *  Berisi: Render engine + Init + Copy + Toast + Modal Info
+ *  Berisi: Render engine + Init + Copy + Toast + Modal Info + Submit Form
  *  HARUS di-load SETELAH config.js dan configData.js
  * ================================================================ */
 
@@ -56,7 +22,7 @@ registerServiceWorker();
     return true;
   }
 
-  /* ---------- Reference (dari window) ---------- */
+  /* ---------- Reference ---------- */
   const ICONS = window.ICONS || {};
   const PLACEHOLDER = window.PLACEHOLDER || {};
   const INFO_CONFIG = window.INFO_CONFIG || { title: "Info", columns: [] };
@@ -112,45 +78,43 @@ registerServiceWorker();
   }
 
   /* ---------- Render: color card ---------- */
-/* ---------- Render: color card (mendukung multi-value per tier) ---------- */
-function renderColorCard(section) {
-  const tierOrder = ["common", "uncommon", "epic", "legend", "unknown"];
-  let html = "";
+  function renderColorCard(section) {
+    const tierOrder = ["common", "uncommon", "epic", "legend", "unknown"];
+    let html = "";
 
-  tierOrder.forEach(tier => {
-    const tierData = section.tiers[tier];
-    if (!tierData) return;
+    tierOrder.forEach(tier => {
+      const tierData = section.tiers[tier];
+      if (!tierData) return;
 
-    // Support 2 format: { value: "..." } (single) atau { values: [...] } (multi)
-    let values = [];
-    if (Array.isArray(tierData.values)) {
-      values = tierData.values;
-    } else if (tierData.value) {
-      values = [{ value: tierData.value, label: tierData.label || "" }];
-    }
+      let values = [];
+      if (Array.isArray(tierData.values)) {
+        values = tierData.values;
+      } else if (tierData.value) {
+        values = [{ value: tierData.value, label: tierData.label || "" }];
+      }
 
-    values.forEach((v, idx) => {
-      const labelAttr = v.label ? ` title="${v.label}"` : "";
-      const labelHtml = v.label ? `<div class="color-label">${v.label}</div>` : "";
-      html += `
-        <article class="card" data-rarity="${tier}"${labelAttr}>
-          <div class="swatch-wrapper">
-            <span class="rarity-badge float ${tier}">${TIER_LABEL[tier]}</span>
-            <div class="swatch-circle" style="background:${rgbPreview(v.value)};"></div>
-            ${labelHtml}
-          </div>
-          <div class="card-content">
-            <div class="id-row no-border">
-              <span class="id-text">${v.value}</span>
-              ${copyBtn(v.value)}
+      values.forEach((v) => {
+        const labelAttr = v.label ? ` title="${v.label}"` : "";
+        const labelHtml = v.label ? `<div class="color-label">${v.label}</div>` : "";
+        html += `
+          <article class="card" data-rarity="${tier}"${labelAttr}>
+            <div class="swatch-wrapper">
+              <span class="rarity-badge float ${tier}">${TIER_LABEL[tier]}</span>
+              <div class="swatch-circle" style="background:${rgbPreview(v.value)};"></div>
+              ${labelHtml}
             </div>
-          </div>
-        </article>`;
+            <div class="card-content">
+              <div class="id-row no-border">
+                <span class="id-text">${v.value}</span>
+                ${copyBtn(v.value)}
+              </div>
+            </div>
+          </article>`;
+      });
     });
-  });
 
-  return html;
-}
+    return html;
+  }
 
   /* ---------- Render: item card ---------- */
   function renderItemCard(section) {
@@ -222,16 +186,15 @@ function renderColorCard(section) {
       gridClass += " wide";
       const totalNames = Object.values(section.tiers).reduce((sum, t) => sum + (t.names ? t.names.length : 0), 0);
       countLabel = `${totalNames} items`;
-} else if (section.type === "color") {
-  gridContent = renderColorCard(section);
-  // Hitung total value (bisa lebih dari 1 per tier)
-  const total = Object.values(section.tiers).reduce((sum, t) => {
-    if (Array.isArray(t.values)) return sum + t.values.length;
-    if (t.value) return sum + 1;
-    return sum;
-  }, 0);
-  countLabel = `${total} items`;
-} else if (section.type === "uniform") {
+    } else if (section.type === "color") {
+      gridContent = renderColorCard(section);
+      const total = Object.values(section.tiers).reduce((sum, t) => {
+        if (Array.isArray(t.values)) return sum + t.values.length;
+        if (t.value) return sum + 1;
+        return sum;
+      }, 0);
+      countLabel = `${total} items`;
+    } else if (section.type === "uniform") {
       gridContent = renderUniformCard(section);
       gridClass += " wide";
       countLabel = `${section.items.length} set`;
@@ -376,6 +339,273 @@ function renderColorCard(section) {
     document.documentElement.setAttribute("data-gender", genderKey);
   }
 
+  /* ================================================================
+   *  SUBMIT FORM (Rekomendasi Aksesoris)
+   * ================================================================ */
+
+  // ⚠️ Webhook Discord (publik)
+  const DISCORD_WEBHOOK_URL =
+    "https://discord.com/api/webhooks/1560223429670735932/Iv4UW_jrzD3jDMDzlb2C6Q5FX_C5IPv7pHZwheUhg2osPgWnefstxhiDw-qzFsN0Ma5-";
+
+  // Rate limit sederhana: 1x kirim per 60 detik
+  let lastSubmitTime = 0;
+  const SUBMIT_COOLDOWN = 60000;
+
+  // Warna embed Discord per rarity
+  const RARITY_COLOR = {
+    common:   0x94a3b8,
+    uncommon: 0x4ade80,
+    epic:     0xc084fc,
+    legend:   0xfbbf24,
+    unknown:  0xf87171
+  };
+
+  // Label kategori yang enak dibaca
+  const CATEGORY_LABEL = {
+    hair:     "Hair",
+    faceType: "Face Type",
+    headAcc:  "Head Accessory",
+    faceAcc:  "Face Accessory",
+    neckAcc:  "Neck Accessory",
+    armAcc:   "Arm Accessory",
+    waistAcc: "Waist Accessory",
+    backAcc:  "Back Accessory",
+    uniform:  "Uniform (Shirt + Pants)"
+  };
+
+  // Helper: bungkus link dengan code block agar bisa di-copy
+  function linkCodeBlock(url) {
+    return "```" + url + "```";
+  }
+
+  function initSubmitForm() {
+    const btn = document.getElementById("submitBtn");
+    const modal = document.getElementById("submitModal");
+    const closeBtn = document.getElementById("submitModalClose");
+    const cancelBtn = document.getElementById("submitCancel");
+    const form = document.getElementById("submitForm");
+    const sendBtn = document.getElementById("submitSend");
+
+    if (!btn || !modal || !form) {
+      console.warn("[submit] Elemen form tidak ditemukan.");
+      return;
+    }
+
+    const categorySelect = document.getElementById("submitCategory");
+    const genderSelect   = document.getElementById("submitGender");
+    const modeItem       = document.getElementById("modeItem");
+    const modeUniform    = document.getElementById("modeUniform");
+
+    // === Sinkronisasi gender dari tab aktif ===
+    function syncGenderFromActiveTab() {
+      const activeBtn = document.querySelector(".gender-btn.active");
+      if (!activeBtn || !genderSelect) return;
+      const currentGender = activeBtn.dataset.target; // "male" | "female"
+      if (currentGender && genderSelect.value !== currentGender) {
+        genderSelect.value = currentGender;
+      }
+    }
+
+    function updateFormMode() {
+      const isUniform = categorySelect.value === "uniform";
+      modeItem.style.display = isUniform ? "none" : "";
+      modeUniform.style.display = isUniform ? "" : "none";
+
+      const itemFields = ["submitId", "submitLink"];
+      const uniformFields = ["submitUniformName", "submitShirtId", "submitShirtLink", "submitPantsId", "submitPantsLink"];
+
+      itemFields.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.required = !isUniform;
+      });
+      uniformFields.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.required = isUniform;
+      });
+    }
+
+    categorySelect.addEventListener("change", updateFormMode);
+    updateFormMode();
+
+    const openModal = () => {
+      syncGenderFromActiveTab();   // ← sinkron sebelum buka
+      modal.classList.add("show");
+      document.body.style.overflow = "hidden";
+    };
+
+    const closeModal = () => {
+      modal.classList.remove("show");
+      document.body.style.overflow = "";
+      form.reset();
+      updateFormMode();
+    };
+
+    btn.addEventListener("click", openModal);
+    closeBtn.addEventListener("click", closeModal);
+    cancelBtn.addEventListener("click", closeModal);
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const now = Date.now();
+      if (now - lastSubmitTime < SUBMIT_COOLDOWN) {
+        const sisa = Math.ceil((SUBMIT_COOLDOWN - (now - lastSubmitTime)) / 1000);
+        showToast(`Tunggu ${sisa} detik sebelum kirim lagi`, true);
+        return;
+      }
+
+      const gender = form.gender.value.trim();
+      const category = form.category.value.trim();
+      const rarity = form.rarity.value.trim();
+      const note = form.note.value.trim();
+      const isUniform = category === "uniform";
+
+      let embeds = [];
+
+      if (isUniform) {
+        const uniformName = form.uniformName.value.trim();
+        const shirtId = form.shirtId.value.trim();
+        const shirtLink = form.shirtLink.value.trim();
+        const pantsId = form.pantsId.value.trim();
+        const pantsLink = form.pantsLink.value.trim();
+
+        if (!uniformName || !shirtId || !shirtLink || !pantsId || !pantsLink) {
+          showToast("Lengkapi semua field uniform", true);
+          return;
+        }
+        if (!/^[0-9]+$/.test(shirtId) || !/^[0-9]+$/.test(pantsId)) {
+          showToast("Shirt ID & Pants ID harus angka", true);
+          return;
+        }
+        if (!/^https:\/\//i.test(shirtLink) || !/^https:\/\//i.test(pantsLink)) {
+          showToast("Link harus diawali https://", true);
+          return;
+        }
+
+        // ===== Embed 1: INFO =====
+        embeds.push({
+          title: "> Rekomendasi Uniform Baru",
+          color: RARITY_COLOR[rarity] || 0x2ec7ff,
+          fields: [
+            { name: "Gender",   value: gender,   inline: true },
+            { name: "Kategori", value: CATEGORY_LABEL[category] || category, inline: true },
+            { name: "Rarity",   value: TIER_LABEL[rarity] || rarity, inline: true },
+            { name: "Set Name", value: uniformName, inline: false },
+            { name: "Shirt ID", value: `\`${shirtId}\``, inline: true },
+            { name: "Pants ID", value: `\`${pantsId}\``, inline: true }
+          ],
+          timestamp: new Date().toISOString(),
+          footer: { text: `Rarity: ${TIER_LABEL[rarity] || rarity}` }
+        });
+
+        // ===== Embed 2: SHIRT PREVIEW =====
+        embeds.push({
+          title: "👕 Shirt Preview",
+          color: RARITY_COLOR[rarity] || 0x2ec7ff,
+          fields: [
+            { name: "Link", value: shirtLink, inline: false },
+            { name: "Copy", value: linkCodeBlock(shirtLink), inline: false }
+          ],
+          image: { url: shirtLink },
+          footer: { text: `Shirt ID: ${shirtId}` }
+        });
+
+        // ===== Embed 3: PANTS PREVIEW =====
+        embeds.push({
+          title: "👖 Pants Preview",
+          color: RARITY_COLOR[rarity] || 0x2ec7ff,
+          fields: [
+            { name: "Link", value: pantsLink, inline: false },
+            { name: "Copy", value: linkCodeBlock(pantsLink), inline: false }
+          ],
+          image: { url: pantsLink },
+          footer: { text: `Pants ID: ${pantsId}` }
+        });
+
+      } else {
+        const assetId = form.assetId.value.trim();
+        const link = form.link.value.trim();
+
+        if (!assetId || !link) {
+          showToast("Lengkapi Asset ID & Link", true);
+          return;
+        }
+        if (!/^[0-9]+$/.test(assetId)) {
+          showToast("Asset ID harus berupa angka", true);
+          return;
+        }
+        if (!/^https:\/\//i.test(link)) {
+          showToast("Link harus diawali https://", true);
+          return;
+        }
+
+        embeds.push({
+          title: "> Rekomendasi Aksesoris Baru",
+          color: RARITY_COLOR[rarity] || 0x2ec7ff,
+          fields: [
+            { name: "Gender",   value: gender,   inline: true },
+            { name: "Kategori", value: CATEGORY_LABEL[category] || category, inline: true },
+            { name: "Rarity",   value: TIER_LABEL[rarity] || rarity, inline: true },
+            { name: "Asset ID", value: `\`${assetId}\``, inline: false },
+            { name: "Preview", value: link, inline: false },
+            { name: "Preview (Copy)", value: linkCodeBlock(link), inline: false }
+          ],
+          image: { url: link },
+          timestamp: new Date().toISOString(),
+          footer: { text: `Rarity: ${TIER_LABEL[rarity] || rarity}` }
+        });
+      }
+
+      // Catatan ditambahkan ke embed pertama
+      if (note) {
+        embeds[0].fields.push({ name: "Catatan", value: note.slice(0, 300), inline: false });
+      }
+
+      const payload = { embeds };
+
+      sendBtn.classList.add("is-loading");
+      sendBtn.disabled = true;
+      cancelBtn.disabled = true;
+
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
+
+      try {
+        const res = await fetch(DISCORD_WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          signal: controller.signal
+        });
+
+        if (res.status === 204 || res.ok) {
+          lastSubmitTime = Date.now();
+          showToast("✅ Rekomendasi terkirim, terima kasih!");
+          setTimeout(closeModal, 800);
+        } else {
+          const errText = await res.text().catch(() => "");
+          console.error("Discord error:", res.status, errText);
+          showToast("Gagal mengirim. Coba lagi nanti.", true);
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+        if (err.name === "AbortError") {
+          showToast("Timeout. Cek koneksi internet kamu.", true);
+        } else {
+          showToast("Gagal koneksi. Cek internet kamu.", true);
+        }
+      } finally {
+        clearTimeout(timeout);
+        sendBtn.classList.remove("is-loading");
+        sendBtn.disabled = false;
+        cancelBtn.disabled = false;
+      }
+    });
+  }
+
   /* ---------- Init ---------- */
   function init() {
     if (!checkDependencies()) return;
@@ -420,6 +650,10 @@ function renderColorCard(section) {
           p.classList.toggle("active", p.dataset.gender === target);
         });
         setPageTheme(target);
+
+        // ← Sinkron gender di form submit saat tab berubah
+        const genderSelect = document.getElementById("submitGender");
+        if (genderSelect) genderSelect.value = target;
       });
       btn.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") { e.preventDefault(); btn.click(); }
@@ -451,9 +685,10 @@ function renderColorCard(section) {
     });
 
     updateInfoButtonState();
+    initSubmitForm();
   }
 
-  /* ---------- Bootstrap: tunggu DOM ready ---------- */
+  /* ---------- Bootstrap ---------- */
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
   } else {

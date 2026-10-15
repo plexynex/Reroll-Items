@@ -6,7 +6,7 @@
  *  - CSS/JS/Font: Stale While Revalidate (cepat + update di background)
  * ================================================================ */
 
-const VERSION = "v3";
+const VERSION = "v4";
 const STATIC_CACHE = `reroll-static-${VERSION}`;
 const IMAGE_CACHE  = `reroll-images-${VERSION}`;
 const FONT_CACHE   = `reroll-fonts-${VERSION}`;
