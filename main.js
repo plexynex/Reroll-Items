@@ -1,6 +1,7 @@
 /* ================================================================
  *  main.js
- *  Berisi: Render engine + Init + Copy + Toast + Modal Info + Submit Form
+ *  Berisi: Render engine + Init + Copy + Toast + Modal Info 
+ *          + Submit Form + Tutorial Modal + Validasi Link Preview
  *  HARUS di-load SETELAH config.js dan configData.js
  * ================================================================ */
 
@@ -340,7 +341,92 @@
   }
 
   /* ================================================================
-   *  SUBMIT FORM (Rekomendasi Aksesoris)
+   *  VALIDASI LINK PREVIEW
+   * ================================================================ */
+
+  // Domain katalog yang DILARANG (bukan direct image)
+  const BLOCKED_DOMAINS = [
+    "roblox.com/catalog",
+    "web.roblox.com/catalog",
+    "roblox.com/games",
+    "roblox.com/users",
+    "roblox.com/library",
+    "roblox.com/bundles",
+    "roblox.com/marketplace"
+  ];
+
+  // Ekstensi file gambar yang diizinkan
+  const ALLOWED_EXTENSIONS = /\.(png|jpg|jpeg|gif|webp|svg|avif)(\?.*)?$/i;
+
+  // Path CDN Roblox yang menandakan direct image
+  const ROBLOX_CDN_PATHS = [
+    "/HairAccessory/",
+    "/DynamicHeadCostume/",
+    "/Shirt/",
+    "/Pants/",
+    "/Hat/",
+    "/Face/",
+    "/Neck/",
+    "/Front/",
+    "/Back/",
+    "/Waist/",
+    "/Webp/noFilter",
+    "/Png/noFilter",
+    "/Asset/"
+  ];
+
+  function validatePreviewLink(url) {
+    if (!url || typeof url !== "string") {
+      return { valid: false, reason: "Link kosong" };
+    }
+
+    // Harus https
+    if (!/^https:\/\//i.test(url)) {
+      return { valid: false, reason: "Link harus diawali https://" };
+    }
+
+    // Parse URL
+    let parsed;
+    try {
+      parsed = new URL(url);
+    } catch {
+      return { valid: false, reason: "Format URL tidak valid" };
+    }
+
+    const fullUrl = parsed.href.toLowerCase();
+    const hostname = parsed.hostname.toLowerCase();
+
+    // Cek blacklist domain katalog
+    for (const blocked of BLOCKED_DOMAINS) {
+      if (fullUrl.includes(blocked)) {
+        return {
+          valid: false,
+          reason: "Ini link halaman katalog, bukan link gambar. Drag gambar ke tab URL untuk dapatkan link preview."
+        };
+      }
+    }
+
+    // Cek apakah ada ekstensi gambar
+    const hasImageExtension = ALLOWED_EXTENSIONS.test(parsed.pathname);
+
+    // Cek apakah URL CDN Roblox yang valid
+    const isRobloxCdnImage =
+      (hostname.endsWith("rbxcdn.com") || hostname.endsWith("roblox.com")) &&
+      ROBLOX_CDN_PATHS.some(p => parsed.pathname.includes(p));
+
+    // Valid kalau salah satu terpenuhi
+    if (!hasImageExtension && !isRobloxCdnImage) {
+      return {
+        valid: false,
+        reason: "Link bukan direct image. Harus berakhiran .png/.jpg/.webp, atau URL CDN Roblox (tr.rbxcdn.com)."
+      };
+    }
+
+    return { valid: true };
+  }
+
+  /* ================================================================
+   *  SUBMIT FORM + TUTORIAL MODAL
    * ================================================================ */
 
   // ⚠️ Webhook Discord (publik)
@@ -400,7 +486,7 @@
     function syncGenderFromActiveTab() {
       const activeBtn = document.querySelector(".gender-btn.active");
       if (!activeBtn || !genderSelect) return;
-      const currentGender = activeBtn.dataset.target; // "male" | "female"
+      const currentGender = activeBtn.dataset.target;
       if (currentGender && genderSelect.value !== currentGender) {
         genderSelect.value = currentGender;
       }
@@ -427,8 +513,72 @@
     categorySelect.addEventListener("change", updateFormMode);
     updateFormMode();
 
+    // === Live preview gambar saat user paste link ===
+    function setupPreviewListener(inputId, boxId) {
+      const input = document.getElementById(inputId);
+      const box = document.getElementById(boxId);
+      if (!input || !box) return;
+
+      let debounceTimer = null;
+
+      // Helper: bangun HTML error konsisten
+      function buildErrorHTML(title, reason) {
+        return `
+          <div class="link-preview-error">
+            <strong>[!] ${title}</strong><br>
+            ${reason}<br>
+            <span class="link-preview-hint">Klik Tutorial untuk panduan.</span>
+            <br>
+            <button type="button" class="link-preview-help" data-open-tutorial>
+              [?] Buka Tutorial
+            </button>
+          </div>`;
+      }
+
+      input.addEventListener("input", () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+          const url = input.value.trim();
+
+          box.classList.remove("has-image", "is-error");
+          box.innerHTML = "";
+
+          if (!url) {
+            box.innerHTML = `<div class="link-preview-empty">Preview gambar akan muncul di sini</div>`;
+            return;
+          }
+
+          const check = validatePreviewLink(url);
+          if (!check.valid) {
+            box.classList.add("is-error");
+            box.innerHTML = buildErrorHTML("Link tidak valid", check.reason);
+            return;
+          }
+
+          const img = new Image();
+          img.onload = () => {
+            box.classList.add("has-image");
+            box.innerHTML = "";
+            box.appendChild(img);
+          };
+          img.onerror = () => {
+            box.classList.add("is-error");
+            box.innerHTML = buildErrorHTML(
+              "Gambar tidak bisa dimuat",
+              "Link mungkin bukan gambar langsung atau diblokir server."
+            );
+          };
+          img.src = url;
+        }, 400);
+      });
+    }
+
+    setupPreviewListener("submitLink", "previewItem");
+    setupPreviewListener("submitShirtLink", "previewShirt");
+    setupPreviewListener("submitPantsLink", "previewPants");
+
     const openModal = () => {
-      syncGenderFromActiveTab();   // ← sinkron sebelum buka
+      syncGenderFromActiveTab();
       modal.classList.add("show");
       document.body.style.overflow = "hidden";
     };
@@ -438,6 +588,13 @@
       document.body.style.overflow = "";
       form.reset();
       updateFormMode();
+      ["previewItem", "previewShirt", "previewPants"].forEach(id => {
+        const box = document.getElementById(id);
+        if (box) {
+          box.classList.remove("has-image", "is-error");
+          box.innerHTML = `<div class="link-preview-empty">Preview gambar akan muncul di sini</div>`;
+        }
+      });
     };
 
     btn.addEventListener("click", openModal);
@@ -447,6 +604,54 @@
       if (e.target === modal) closeModal();
     });
 
+    // ============================================================
+    // TUTORIAL MODAL
+    // ============================================================
+    const tutorialBtn = document.getElementById("tutorialBtn");
+    const tutorialModal = document.getElementById("tutorialModal");
+    const tutorialClose = document.getElementById("tutorialModalClose");
+
+    const openTutorial = () => {
+      if (!tutorialModal) return;
+      tutorialModal.classList.add("show");
+      document.body.style.overflow = "hidden";
+    };
+
+    const closeTutorial = () => {
+      if (!tutorialModal) return;
+      tutorialModal.classList.remove("show");
+      const submitOpen = document.getElementById("submitModal")?.classList.contains("show");
+      document.body.style.overflow = submitOpen ? "hidden" : "";
+    };
+
+    if (tutorialBtn) tutorialBtn.addEventListener("click", openTutorial);
+    if (tutorialClose) tutorialClose.addEventListener("click", closeTutorial);
+    if (tutorialModal) {
+      tutorialModal.addEventListener("click", (e) => {
+        if (e.target === tutorialModal) closeTutorial();
+      });
+    }
+
+    // Handler tombol "Buka Tutorial" di dalam preview error
+    document.addEventListener("click", (e) => {
+      const trigger = e.target.closest("[data-open-tutorial]");
+      if (trigger) {
+        e.preventDefault();
+        openTutorial();
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        if (tutorialModal && tutorialModal.classList.contains("show")) {
+          closeTutorial();
+        }
+      }
+    });
+
+    // ============================================================
+    // SUBMIT HANDLER
+    // ============================================================
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
@@ -480,14 +685,22 @@
           showToast("Shirt ID & Pants ID harus angka", true);
           return;
         }
-        if (!/^https:\/\//i.test(shirtLink) || !/^https:\/\//i.test(pantsLink)) {
-          showToast("Link harus diawali https://", true);
+
+        const shirtCheck = validatePreviewLink(shirtLink);
+        if (!shirtCheck.valid) {
+          showToast("Shirt: " + shirtCheck.reason + " Klik Tutorial untuk panduan.", true);
+          return;
+        }
+
+        const pantsCheck = validatePreviewLink(pantsLink);
+        if (!pantsCheck.valid) {
+          showToast("Pants: " + pantsCheck.reason + " Klik Tutorial untuk panduan.", true);
           return;
         }
 
         // ===== Embed 1: INFO =====
         embeds.push({
-          title: "> Rekomendasi Uniform Baru",
+          title: "[+] Rekomendasi Uniform Baru",
           color: RARITY_COLOR[rarity] || 0x2ec7ff,
           fields: [
             { name: "Gender",   value: gender,   inline: true },
@@ -503,7 +716,7 @@
 
         // ===== Embed 2: SHIRT PREVIEW =====
         embeds.push({
-          title: "👕 Shirt Preview",
+          title: "[S] Shirt Preview",
           color: RARITY_COLOR[rarity] || 0x2ec7ff,
           fields: [
             { name: "Link", value: shirtLink, inline: false },
@@ -515,7 +728,7 @@
 
         // ===== Embed 3: PANTS PREVIEW =====
         embeds.push({
-          title: "👖 Pants Preview",
+          title: "[P] Pants Preview",
           color: RARITY_COLOR[rarity] || 0x2ec7ff,
           fields: [
             { name: "Link", value: pantsLink, inline: false },
@@ -537,13 +750,15 @@
           showToast("Asset ID harus berupa angka", true);
           return;
         }
-        if (!/^https:\/\//i.test(link)) {
-          showToast("Link harus diawali https://", true);
+
+        const linkCheck = validatePreviewLink(link);
+        if (!linkCheck.valid) {
+          showToast(linkCheck.reason + " Klik Tutorial untuk panduan.", true);
           return;
         }
 
         embeds.push({
-          title: "> Rekomendasi Aksesoris Baru",
+          title: "[+] Rekomendasi Aksesoris Baru",
           color: RARITY_COLOR[rarity] || 0x2ec7ff,
           fields: [
             { name: "Gender",   value: gender,   inline: true },
@@ -559,7 +774,6 @@
         });
       }
 
-      // Catatan ditambahkan ke embed pertama
       if (note) {
         embeds[0].fields.push({ name: "Catatan", value: note.slice(0, 300), inline: false });
       }
@@ -583,7 +797,7 @@
 
         if (res.status === 204 || res.ok) {
           lastSubmitTime = Date.now();
-          showToast("✅ Rekomendasi terkirim, terima kasih!");
+          showToast("[OK] Rekomendasi terkirim, terima kasih!");
           setTimeout(closeModal, 800);
         } else {
           const errText = await res.text().catch(() => "");
@@ -651,7 +865,6 @@
         });
         setPageTheme(target);
 
-        // ← Sinkron gender di form submit saat tab berubah
         const genderSelect = document.getElementById("submitGender");
         if (genderSelect) genderSelect.value = target;
       });

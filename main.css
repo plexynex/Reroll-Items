@@ -1516,3 +1516,250 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+/* ============================================================
+   TUTORIAL BUTTON (dalam form actions)
+   ============================================================ */
+.btn--tutorial {
+  background: rgba(125, 211, 252, 0.08);
+  border-color: rgba(125, 211, 252, 0.25);
+  color: var(--accent);
+  margin-right: auto;   /* dorong ke kiri */
+}
+.btn--tutorial:hover {
+  background: rgba(125, 211, 252, 0.15);
+  border-color: var(--accent-border);
+  box-shadow: 0 0 20px -8px var(--accent-glow);
+}
+.btn--tutorial svg {
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   MODAL TUTORIAL
+   ============================================================ */
+.modal-content--lg { max-width: 720px; }
+
+.tutorial-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.tutorial-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 40px 140px 1fr;
+  gap: 1.25rem;
+  align-items: center;
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+  transition: all 0.25s ease;
+}
+
+.tutorial-step:hover {
+  border-color: var(--accent-border);
+  background: rgba(125, 211, 252, 0.04);
+}
+
+.tutorial-step-number {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  box-shadow: 0 0 20px -8px var(--accent-glow);
+}
+
+.tutorial-step-image {
+  width: 140px;
+  height: 140px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 40%, var(--accent-bg), transparent 70%);
+  border: 1px solid var(--panel-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tutorial-step-image img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.4));
+}
+
+.tutorial-step-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.tutorial-step-title {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.tutorial-step-text {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.tutorial-step-text strong {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.tutorial-step-text code {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--panel-border);
+  padding: 0.1rem 0.4rem;
+  border-radius: 5px;
+  color: var(--accent);
+  word-break: break-all;
+}
+
+/* Responsive tutorial */
+@media (max-width: 640px) {
+  .tutorial-step {
+    grid-template-columns: 40px 1fr;
+    grid-template-rows: auto auto;
+    gap: 0.85rem;
+    padding: 1rem;
+  }
+  .tutorial-step-image {
+    grid-column: 1 / -1;
+    width: 100%;
+    height: 140px;
+  }
+  .tutorial-step-content {
+    grid-column: 1 / -1;
+  }
+  .tutorial-step-number {
+    width: 32px;
+    height: 32px;
+    font-size: 0.85rem;
+  }
+  .tutorial-step-title { font-size: 0.88rem; }
+  .tutorial-step-text { font-size: 0.8rem; }
+
+  .btn--tutorial {
+    margin-right: 0;
+    flex: 1;
+  }
+  .form-actions {
+    flex-wrap: wrap;
+  }
+  .form-actions .btn { flex: 1; }
+}
+
+/* ============================================================
+   LINK PREVIEW (dalam form)
+   ============================================================ */
+.link-preview-box {
+  margin-top: 0.4rem;
+  min-height: 100px;
+  border: 1px dashed var(--panel-border);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  transition: all 0.25s ease;
+  overflow: hidden;
+}
+
+.link-preview-box.has-image {
+  border-style: solid;
+  border-color: var(--accent-border);
+  background: radial-gradient(circle at 50% 40%, var(--accent-bg), transparent 70%);
+}
+
+.link-preview-box.is-error {
+  border-color: rgba(248, 113, 113, 0.5);
+  background: rgba(248, 113, 113, 0.06);
+}
+
+.link-preview-empty {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+.link-preview-error {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: #f87171;
+  text-align: center;
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+}
+
+.link-preview-error strong {
+  color: #f87171;
+  font-weight: 700;
+}
+
+.link-preview-box img {
+  max-width: 100%;
+  max-height: 150px;
+  object-fit: contain;
+  border-radius: 6px;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+}
+
+/* Tombol "Lihat Tutorial" di dalam error preview */
+.link-preview-help {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  margin-top: 0.6rem;
+  padding: 0.45rem 0.9rem;
+  background: rgba(125, 211, 252, 0.1);
+  border: 1px solid rgba(125, 211, 252, 0.35);
+  color: var(--accent);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.link-preview-help:hover {
+  background: rgba(125, 211, 252, 0.2);
+  border-color: var(--accent-border);
+  box-shadow: 0 0 20px -8px var(--accent-glow);
+  transform: translateY(-1px);
+}
+
+.link-preview-help:active {
+  transform: scale(0.97);
+}

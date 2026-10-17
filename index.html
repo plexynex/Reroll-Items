@@ -59,7 +59,9 @@
     <span id="toastText">Berhasil disalin</span>
   </div>
 
-  <!-- MODAL INFO -->
+  <!-- ============================================================
+       MODAL INFO
+       ============================================================ -->
   <div class="modal-overlay" id="infoModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-content">
       <div class="modal-header">
@@ -77,7 +79,9 @@
     </div>
   </div>
 
-  <!-- MODAL SUBMIT -->
+  <!-- ============================================================
+       MODAL SUBMIT (REKOMENDASI)
+       ============================================================ -->
   <div class="modal-overlay" id="submitModal" role="dialog" aria-modal="true">
     <div class="modal-content modal-content--sm">
       <div class="modal-header">
@@ -137,6 +141,9 @@
               <label for="submitLink">Link Preview <span class="required">*</span></label>
               <input type="url" id="submitLink" name="link" placeholder="https://tr.rbxcdn.com/...">
               <span class="form-hint">URL gambar preview (harus https://)</span>
+              <div class="link-preview-box" id="previewItem">
+                <div class="link-preview-empty">Preview gambar akan muncul di sini</div>
+              </div>
             </div>
           </div>
 
@@ -156,6 +163,9 @@
             <div class="form-group">
               <label for="submitShirtLink">Link Preview Shirt <span class="required">*</span></label>
               <input type="url" id="submitShirtLink" name="shirtLink" placeholder="https://tr.rbxcdn.com/.../Shirt/Webp/noFilter">
+              <div class="link-preview-box" id="previewShirt">
+                <div class="link-preview-empty">Preview Shirt akan muncul di sini</div>
+              </div>
             </div>
 
             <div class="form-group">
@@ -166,6 +176,9 @@
             <div class="form-group">
               <label for="submitPantsLink">Link Preview Pants <span class="required">*</span></label>
               <input type="url" id="submitPantsLink" name="pantsLink" placeholder="https://tr.rbxcdn.com/.../Pants/Webp/noFilter">
+              <div class="link-preview-box" id="previewPants">
+                <div class="link-preview-empty">Preview Pants akan muncul di sini</div>
+              </div>
             </div>
           </div>
 
@@ -175,10 +188,91 @@
           </div>
 
           <div class="form-actions">
+            <button type="button" class="btn btn--tutorial" id="tutorialBtn">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 16v-4"/>
+                <path d="M12 8h.01"/>
+              </svg>
+              Tutorial
+            </button>
             <button type="button" class="btn btn--ghost" id="submitCancel">Batal</button>
             <button type="submit" class="btn btn--primary" id="submitSend">Kirim</button>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL TUTORIAL
+       ============================================================ -->
+  <div class="modal-overlay" id="tutorialModal" role="dialog" aria-modal="true">
+    <div class="modal-content modal-content--lg">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <span class="modal-title-dot"></span>
+          <span class="modal-title">Tutorial Rekomendasi</span>
+        </div>
+        <button class="modal-close" id="tutorialModalClose" aria-label="Tutup">
+          <svg viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="tutorial-list">
+
+          <!-- Step 1 -->
+          <div class="tutorial-step">
+            <div class="tutorial-step-number">1</div>
+            <div class="tutorial-step-image">
+              <img src="https://tr.rbxcdn.com/180DAY-64532153db44c1783a8055d65f8ad1f9/420/420/FaceAccessory/Webp/noFilter" alt="Langkah 1" loading="lazy">
+            </div>
+            <div class="tutorial-step-content">
+              <div class="tutorial-step-title">Cari Item di Roblox Catalog</div>
+              <div class="tutorial-step-text">
+                Buka <strong>Roblox Catalog</strong>, cari aksesoris yang ingin kamu rekomendasikan.
+                Salin <strong>Asset ID</strong> dari URL (angka setelah <code>/catalog/</code>).
+                Contoh: <code>roblox.com/catalog/1234567890</code> → Asset ID = <code>1234567890</code>.
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="tutorial-step">
+            <div class="tutorial-step-number">2</div>
+            <div class="tutorial-step-image">
+              <img src="https://tr.rbxcdn.com/180DAY-64532153db44c1783a8055d65f8ad1f9/420/420/FaceAccessory/Webp/noFilter" alt="Langkah 2" loading="lazy">
+            </div>
+            <div class="tutorial-step-content">
+              <div class="tutorial-step-title">Salin Link Preview Gambar</div>
+              <div class="tutorial-step-text">
+                <strong>Drag gambar</strong> preview aksesoris dari halaman Roblox
+                langsung ke <strong>tab URL browser</strong> (tab tempat kamu mengetik alamat website).
+                Setelah gambar terbuka di tab baru, <strong>copy link</strong> di address bar
+                (biasanya berformat <code>https://tr.rbxcdn.com/...</code>).
+                Paste link tersebut ke kolom <strong>Link Preview</strong>.
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="tutorial-step">
+            <div class="tutorial-step-number">3</div>
+            <div class="tutorial-step-image">
+              <img src="https://tr.rbxcdn.com/180DAY-64532153db44c1783a8055d65f8ad1f9/420/420/FaceAccessory/Webp/noFilter" alt="Langkah 3" loading="lazy">
+            </div>
+            <div class="tutorial-step-content">
+              <div class="tutorial-step-title">Isi Form & Kirim</div>
+              <div class="tutorial-step-text">
+                Kembali ke form, pilih <strong>Gender</strong>, <strong>Kategori</strong>,
+                <strong>Rarity</strong>, lalu isi <strong>Asset ID</strong> dan <strong>Link Preview</strong>.
+                Untuk Uniform, isi nama set + ID/link Shirt & Pants. Klik <strong>Kirim</strong> —
+                rekomendasi akan masuk ke Discord admin.
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
   </div>
