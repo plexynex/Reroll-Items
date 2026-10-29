@@ -1188,9 +1188,9 @@ window.REROLL_DATA = {
   title: "Uniform", subtitle: "Shirt + Pants (Satu Set)", icon: "uniform",
   placeholder: { shirt: "shirt", pants: "pants" },
   items: [
-    { rarity: "common", name: "Scout Set",
-      shirt: { id: "", image: "" },
-      pants: { id: "", image: "" } },
+    { rarity: "common", name: "Default",
+      shirt: { id: "99274284058977", image: "https://tr.rbxcdn.com/180DAY-adb8131cf0a9546fc7b46eee9e591844/420/420/Shirt/Webp/noFilter" },
+      pants: { id: "109646850280151", image: "https://tr.rbxcdn.com/180DAY-548d1973a051f1b357d6df96963b6f4f/420/420/Pants/Webp/noFilter" } },
 
     { rarity: "uncommon", name: "Ranger Set",
       shirt: { id: "", image: "" },
@@ -1361,9 +1361,9 @@ window.REROLL_DATA = {
   title: "Uniform", subtitle: "Shirt + Pants (Satu Set)", icon: "uniform",
   placeholder: { shirt: "shirt", pants: "pants" },
   items: [
-    { rarity: "common", name: "Scout Set",
-      shirt: { id: "", image: "" },
-      pants: { id: "", image: "" } },
+    { rarity: "common", name: "Default",
+      shirt: { id: "107705089764870", image: "https://tr.rbxcdn.com/180DAY-046f9944e69699d6e18dd786cb3676c7/420/420/Shirt/Webp/noFilter" },
+      pants: { id: "119150852356677", image: "https://tr.rbxcdn.com/180DAY-0e0e789ea42c60b4e6a7c08df9d444a3/420/420/Pants/Webp/noFilter" } },
 
     { rarity: "uncommon", name: "Ranger Set",
       shirt: { id: "", image: "" },
