@@ -2,6 +2,9 @@
  *  main.js
  *  Berisi: Render engine + Init + Copy + Toast + Modal Info 
  *          + Submit Form + Tutorial Modal + Validasi Link Preview
+ *          + Group Navigation + Category Navigation + Scroll Spy
+ *          + Gender Accent (emoji + hex) + Search Engine
+ *          + Scroll to Top Button
  *  HARUS di-load SETELAH config.js dan configData.js
  * ================================================================ */
 
@@ -179,7 +182,7 @@
   }
 
   /* ---------- Render: section ---------- */
-  function renderSection(section) {
+  function renderSection(section, genderKey) {
     let gridContent, countLabel, gridClass = "grid-container";
 
     if (section.type === "grouped") {
@@ -204,8 +207,10 @@
       countLabel = `${section.items.length} items`;
     }
 
+    const sectionId = `section-${genderKey}-${section.id}`;
+
     return `
-      <section class="category-section">
+      <section class="category-section" id="${sectionId}" data-section-id="${section.id}" data-gender="${genderKey}" data-group="${section.group}">
         <div class="category-header">
           <div class="category-title-wrap">
             <span class="category-icon">${ICONS[section.icon] || ""}</span>
@@ -230,9 +235,10 @@
     });
 
     const html = groups.map(groupName => {
-      const items = groupMap[groupName].map(renderSection).join("");
+      const items = groupMap[groupName].map(sec => renderSection(sec, genderKey)).join("");
+      const groupId = `group-${genderKey}-${groupName.toLowerCase().replace(/\s+/g, "-")}`;
       return `
-        <div class="group-block">
+        <div class="group-block" id="${groupId}" data-group="${groupName}" data-gender="${genderKey}">
           <div class="group-label">
             <span class="group-label-text">${groupName}</span>
             <span class="group-label-line"></span>
@@ -242,6 +248,118 @@
     }).join("");
 
     return `<div class="view-panel${isActive ? " active" : ""}" id="panel-${genderKey}" data-gender="${genderKey}">${html}</div>`;
+  }
+
+  /* ---------- Render: group navigation (Level 1) ---------- */
+  function renderGroupNav(genderKey, sections) {
+    const nav = document.getElementById("groupNav");
+    if (!nav) return;
+
+    const groups = [];
+    const groupMap = {};
+    sections.forEach(s => {
+      if (!groupMap[s.group]) { groupMap[s.group] = []; groups.push(s.group); }
+      groupMap[s.group].push(s);
+    });
+
+    const countPerGroup = {};
+    groups.forEach(g => {
+      let total = 0;
+      groupMap[g].forEach(sec => {
+        if (sec.type === "grouped") {
+          total += Object.values(sec.tiers).reduce((sum, t) => sum + (t.names ? t.names.length : 0), 0);
+        } else if (sec.type === "color") {
+          total += Object.values(sec.tiers).reduce((sum, t) => {
+            if (Array.isArray(t.values)) return sum + t.values.length;
+            if (t.value) return sum + 1;
+            return sum;
+          }, 0);
+        } else if (sec.items) {
+          total += sec.items.length;
+        }
+      });
+      countPerGroup[g] = total;
+    });
+
+    nav.innerHTML = `
+      <span class="group-nav-label">Lompat ke</span>
+      ${groups.map((g, i) => {
+        const groupId = `group-${genderKey}-${g.toLowerCase().replace(/\s+/g, "-")}`;
+        return `
+          <button class="group-nav-btn${i === 0 ? " active" : ""}" data-group-target="${groupId}" data-group-name="${g}">
+            ${g}
+            <span class="nav-count">${countPerGroup[g]}</span>
+          </button>`;
+      }).join("")}
+    `;
+
+    renderCategoryNav(genderKey, sections, groups[0]);
+
+    nav.querySelectorAll(".group-nav-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const targetId = btn.dataset.groupTarget;
+        const groupName = btn.dataset.groupName;
+        const target = document.getElementById(targetId);
+        if (!target) return;
+
+        nav.querySelectorAll(".group-nav-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        renderCategoryNav(genderKey, sections, groupName);
+
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    });
+  }
+
+  /* ---------- Render: category navigation (Level 2) ---------- */
+  function renderCategoryNav(genderKey, sections, activeGroup) {
+    const nav = document.getElementById("categoryNav");
+    if (!nav) return;
+
+    const filtered = sections.filter(s => s.group === activeGroup);
+
+    if (filtered.length === 0) {
+      nav.innerHTML = "";
+      return;
+    }
+
+    function countItems(sec) {
+      if (sec.type === "grouped") {
+        return Object.values(sec.tiers).reduce((sum, t) => sum + (t.names ? t.names.length : 0), 0);
+      }
+      if (sec.type === "color") {
+        return Object.values(sec.tiers).reduce((sum, t) => {
+          if (Array.isArray(t.values)) return sum + t.values.length;
+          if (t.value) return sum + 1;
+          return sum;
+        }, 0);
+      }
+      if (sec.items) return sec.items.length;
+      return 0;
+    }
+
+    nav.innerHTML = filtered.map((sec, i) => {
+      const sectionId = `section-${genderKey}-${sec.id}`;
+      return `
+        <button class="category-nav-btn${i === 0 ? " active" : ""}" data-cat-target="${sectionId}">
+          ${sec.title}
+          <span class="cat-count">${countItems(sec)}</span>
+        </button>`;
+    }).join("");
+
+    nav.querySelectorAll(".category-nav-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const targetId = btn.dataset.catTarget;
+        const target = document.getElementById(targetId);
+        if (!target) return;
+
+        nav.querySelectorAll(".category-nav-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    });
   }
 
   /* ---------- Info modal ---------- */
@@ -344,7 +462,6 @@
    *  VALIDASI LINK PREVIEW
    * ================================================================ */
 
-  // Domain katalog yang DILARANG (bukan direct image)
   const BLOCKED_DOMAINS = [
     "roblox.com/catalog",
     "web.roblox.com/catalog",
@@ -355,10 +472,8 @@
     "roblox.com/marketplace"
   ];
 
-  // Ekstensi file gambar yang diizinkan
   const ALLOWED_EXTENSIONS = /\.(png|jpg|jpeg|gif|webp|svg|avif)(\?.*)?$/i;
 
-  // Path CDN Roblox yang menandakan direct image
   const ROBLOX_CDN_PATHS = [
     "/HairAccessory/",
     "/DynamicHeadCostume/",
@@ -380,12 +495,10 @@
       return { valid: false, reason: "Link kosong" };
     }
 
-    // Harus https
     if (!/^https:\/\//i.test(url)) {
       return { valid: false, reason: "Link harus diawali https://" };
     }
 
-    // Parse URL
     let parsed;
     try {
       parsed = new URL(url);
@@ -396,7 +509,6 @@
     const fullUrl = parsed.href.toLowerCase();
     const hostname = parsed.hostname.toLowerCase();
 
-    // Cek blacklist domain katalog
     for (const blocked of BLOCKED_DOMAINS) {
       if (fullUrl.includes(blocked)) {
         return {
@@ -406,15 +518,12 @@
       }
     }
 
-    // Cek apakah ada ekstensi gambar
     const hasImageExtension = ALLOWED_EXTENSIONS.test(parsed.pathname);
 
-    // Cek apakah URL CDN Roblox yang valid
     const isRobloxCdnImage =
       (hostname.endsWith("rbxcdn.com") || hostname.endsWith("roblox.com")) &&
       ROBLOX_CDN_PATHS.some(p => parsed.pathname.includes(p));
 
-    // Valid kalau salah satu terpenuhi
     if (!hasImageExtension && !isRobloxCdnImage) {
       return {
         valid: false,
@@ -429,15 +538,12 @@
    *  SUBMIT FORM + TUTORIAL MODAL
    * ================================================================ */
 
-  // ⚠️ Webhook Discord (publik)
   const DISCORD_WEBHOOK_URL =
     "https://discord.com/api/webhooks/1560223429670735932/Iv4UW_jrzD3jDMDzlb2C6Q5FX_C5IPv7pHZwheUhg2osPgWnefstxhiDw-qzFsN0Ma5-";
 
-  // Rate limit sederhana: 1x kirim per 60 detik
   let lastSubmitTime = 0;
   const SUBMIT_COOLDOWN = 60000;
 
-  // Warna embed Discord per rarity
   const RARITY_COLOR = {
     common:   0x94a3b8,
     uncommon: 0x4ade80,
@@ -446,7 +552,25 @@
     unknown:  0xf87171
   };
 
-  // Label kategori yang enak dibaca
+  /* ---------- GENDER ACCENT (emoji + hex, tampil di field) ---------- */
+  const GENDER_EMOJI = {
+    male:   "🔵",
+    female: "🩷"
+  };
+
+  const GENDER_HEX = {
+    male:   "#2ec7ff",
+    female: "#ff6ec7"
+  };
+
+  function buildGenderField(gender) {
+    const g = (gender || "").toLowerCase();
+    const emoji = GENDER_EMOJI[g] || "⚪";
+    const hex = GENDER_HEX[g] || "#ffffff";
+    const label = g ? g.toUpperCase() : "UNKNOWN";
+    return `${emoji} ${label} · \`${hex}\``;
+  }
+
   const CATEGORY_LABEL = {
     hair:     "Hair",
     faceType: "Face Type",
@@ -459,9 +583,29 @@
     uniform:  "Uniform (Shirt + Pants)"
   };
 
-  // Helper: bungkus link dengan code block agar bisa di-copy
   function linkCodeBlock(url) {
     return "```" + url + "```";
+  }
+
+  // Bungkus ID dengan triple backtick (click-to-copy di semua Discord)
+  function idCodeBlock(id) {
+    return "```" + id + "```";
+  }
+
+  /* ---------- Helper: Formatted DateTime ---------- */
+  function padNumber(n, width) {
+    return String(n).padStart(width, "0");
+  }
+
+  function getFormattedDateTime() {
+    const now = new Date();
+    const dd = padNumber(now.getDate(), 2);
+    const mm = padNumber(now.getMonth() + 1, 2);
+    const yyyy = now.getFullYear();
+    const hh = padNumber(now.getHours(), 2);
+    const mn = padNumber(now.getMinutes(), 2);
+    const ss = padNumber(now.getSeconds(), 2);
+    return `${dd}/${mm}/${yyyy} ${hh}:${mn}:${ss}`;
   }
 
   function initSubmitForm() {
@@ -482,7 +626,6 @@
     const modeItem       = document.getElementById("modeItem");
     const modeUniform    = document.getElementById("modeUniform");
 
-    // === Sinkronisasi gender dari tab aktif ===
     function syncGenderFromActiveTab() {
       const activeBtn = document.querySelector(".gender-btn.active");
       if (!activeBtn || !genderSelect) return;
@@ -521,7 +664,6 @@
 
       let debounceTimer = null;
 
-      // Helper: bangun HTML error konsisten
       function buildErrorHTML(title, reason) {
         return `
           <div class="link-preview-error">
@@ -632,7 +774,6 @@
       });
     }
 
-    // Handler tombol "Buka Tutorial" di dalam preview error
     document.addEventListener("click", (e) => {
       const trigger = e.target.closest("[data-open-tutorial]");
       if (trigger) {
@@ -668,6 +809,8 @@
       const note = form.note.value.trim();
       const isUniform = category === "uniform";
 
+      const dateTimeNow = getFormattedDateTime();
+
       let embeds = [];
 
       if (isUniform) {
@@ -698,44 +841,45 @@
           return;
         }
 
-        // ===== Embed 1: INFO =====
+        // Embed 1: Info
         embeds.push({
           title: "[+] Rekomendasi Uniform Baru",
+          description: `Dikirim: ${dateTimeNow}`,
           color: RARITY_COLOR[rarity] || 0x2ec7ff,
           fields: [
-            { name: "Gender",   value: gender,   inline: true },
+            { name: "Gender",   value: buildGenderField(gender), inline: true },
             { name: "Kategori", value: CATEGORY_LABEL[category] || category, inline: true },
             { name: "Rarity",   value: TIER_LABEL[rarity] || rarity, inline: true },
             { name: "Set Name", value: uniformName, inline: false },
-            { name: "Shirt ID", value: `\`${shirtId}\``, inline: true },
-            { name: "Pants ID", value: `\`${pantsId}\``, inline: true }
+            { name: "Shirt ID (klik untuk copy)", value: idCodeBlock(shirtId), inline: false },
+            { name: "Pants ID (klik untuk copy)", value: idCodeBlock(pantsId), inline: false }
           ],
           timestamp: new Date().toISOString(),
           footer: { text: `Rarity: ${TIER_LABEL[rarity] || rarity}` }
         });
 
-        // ===== Embed 2: SHIRT PREVIEW =====
+        // Embed 2: Shirt
         embeds.push({
           title: "[S] Shirt Preview",
           color: RARITY_COLOR[rarity] || 0x2ec7ff,
           fields: [
-            { name: "Link", value: shirtLink, inline: false },
-            { name: "Copy", value: linkCodeBlock(shirtLink), inline: false }
+            { name: "Shirt ID (klik untuk copy)", value: idCodeBlock(shirtId), inline: false },
+            { name: "Preview (Copy)", value: linkCodeBlock(shirtLink), inline: false }
           ],
           image: { url: shirtLink },
-          footer: { text: `Shirt ID: ${shirtId}` }
+          footer: { text: `${GENDER_EMOJI[gender] || ""} ${gender.toUpperCase()} · Shirt ID: ${shirtId}` }
         });
 
-        // ===== Embed 3: PANTS PREVIEW =====
+        // Embed 3: Pants
         embeds.push({
           title: "[P] Pants Preview",
           color: RARITY_COLOR[rarity] || 0x2ec7ff,
           fields: [
-            { name: "Link", value: pantsLink, inline: false },
-            { name: "Copy", value: linkCodeBlock(pantsLink), inline: false }
+            { name: "Pants ID (klik untuk copy)", value: idCodeBlock(pantsId), inline: false },
+            { name: "Preview (Copy)", value: linkCodeBlock(pantsLink), inline: false }
           ],
           image: { url: pantsLink },
-          footer: { text: `Pants ID: ${pantsId}` }
+          footer: { text: `${GENDER_EMOJI[gender] || ""} ${gender.toUpperCase()} · Pants ID: ${pantsId}` }
         });
 
       } else {
@@ -759,13 +903,13 @@
 
         embeds.push({
           title: "[+] Rekomendasi Aksesoris Baru",
+          description: `Dikirim: ${dateTimeNow}`,
           color: RARITY_COLOR[rarity] || 0x2ec7ff,
           fields: [
-            { name: "Gender",   value: gender,   inline: true },
+            { name: "Gender",   value: buildGenderField(gender), inline: true },
             { name: "Kategori", value: CATEGORY_LABEL[category] || category, inline: true },
             { name: "Rarity",   value: TIER_LABEL[rarity] || rarity, inline: true },
-            { name: "Asset ID", value: `\`${assetId}\``, inline: false },
-            { name: "Preview", value: link, inline: false },
+            { name: "Asset ID (klik untuk copy)", value: idCodeBlock(assetId), inline: false },
             { name: "Preview (Copy)", value: linkCodeBlock(link), inline: false }
           ],
           image: { url: link },
@@ -779,6 +923,8 @@
       }
 
       const payload = { embeds };
+
+      console.log(`[Submit] ${dateTimeNow}`, { gender, category, rarity });
 
       sendBtn.classList.add("is-loading");
       sendBtn.disabled = true;
@@ -820,6 +966,258 @@
     });
   }
 
+  /* ============================================================
+   * SEARCH ENGINE
+   * ============================================================ */
+
+  // Helper: cek apakah 1 card cocok
+  function cardMatchesQuery(cardEl, query) {
+    if (!query) return true;
+    const q = query.toLowerCase().trim();
+    const text = (cardEl.textContent || "").toLowerCase();
+    return text.includes(q);
+  }
+
+  // Highlight text dalam elemen
+  function highlightText(el, query) {
+    if (!query || !el) return;
+    const q = query.trim();
+    if (!q) return;
+
+    if (!el.dataset.originalHtml) {
+      el.dataset.originalHtml = el.innerHTML;
+    }
+    let html = el.dataset.originalHtml;
+
+    const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const regex = new RegExp(`(${escaped})`, "gi");
+
+    html = html.replace(/>([^<]+)</g, (match, content) => {
+      return ">" + content.replace(regex, '<mark class="search-hl">$1</mark>') + "<";
+    });
+
+    el.innerHTML = html;
+  }
+
+  function resetHighlight(el) {
+    if (el && el.dataset.originalHtml) {
+      el.innerHTML = el.dataset.originalHtml;
+      delete el.dataset.originalHtml;
+    }
+  }
+
+  // Filter & highlight semua section & card
+  function applySearch(query) {
+    const activePanel = document.querySelector(".view-panel.active");
+    if (!activePanel) return { total: 0, sections: 0 };
+
+    const sections = activePanel.querySelectorAll(".category-section");
+    let totalMatches = 0;
+    let sectionMatches = 0;
+
+    sections.forEach(sectionEl => {
+      sectionEl.querySelectorAll("[data-original-html]").forEach(el => resetHighlight(el));
+
+      const sectionTitle = sectionEl.querySelector(".category-title")?.textContent || "";
+      const sectionSubtitle = sectionEl.querySelector(".category-subtitle")?.textContent || "";
+      const sectionText = (sectionTitle + " " + sectionSubtitle).toLowerCase();
+      const sectionTitleMatch = query && sectionText.includes(query.toLowerCase());
+
+      const cards = sectionEl.querySelectorAll(".card, .grouped-card");
+      let visibleCards = 0;
+
+      cards.forEach(card => {
+        card.querySelectorAll("[data-original-html]").forEach(el => resetHighlight(el));
+
+        const matches = cardMatchesQuery(card, query);
+
+        if (matches) {
+          card.classList.remove("search-hidden");
+          visibleCards++;
+
+          card.querySelectorAll(".chip, .id-text, .set-name-badge, .color-label, .accessory-name").forEach(el => {
+            highlightText(el, query);
+          });
+        } else {
+          card.classList.add("search-hidden");
+        }
+      });
+
+      const sectionVisible = visibleCards > 0 || sectionTitleMatch;
+
+      if (sectionVisible) {
+        sectionEl.classList.remove("search-hidden");
+        sectionMatches++;
+        totalMatches += visibleCards;
+      } else {
+        sectionEl.classList.add("search-hidden");
+      }
+    });
+
+    return { total: totalMatches, sections: sectionMatches };
+  }
+
+  // Setup search bar events
+  function setupSearch() {
+    const input = document.getElementById("searchInput");
+    const clearBtn = document.getElementById("searchClear");
+    const info = document.getElementById("searchInfo");
+    const count = document.getElementById("searchCount");
+
+    if (!input) return;
+
+    let searchTimer = null;
+
+    input.addEventListener("input", () => {
+      const query = input.value.trim();
+
+      clearBtn.hidden = query.length === 0;
+
+      if (query.length === 0) {
+        info.hidden = true;
+      }
+
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        if (query.length === 0) {
+          applySearch("");
+          info.hidden = true;
+          return;
+        }
+
+        const result = applySearch(query);
+        info.hidden = false;
+        count.textContent = `${result.total} hasil · ${result.sections} kategori`;
+      }, 200);
+    });
+
+    clearBtn.addEventListener("click", () => {
+      input.value = "";
+      clearBtn.hidden = true;
+      info.hidden = true;
+      applySearch("");
+      input.focus();
+    });
+
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        input.value = "";
+        clearBtn.hidden = true;
+        info.hidden = true;
+        applySearch("");
+      }
+    });
+  }
+
+  /* ---------- Scroll Spy (Level 1 + Level 2) ---------- */
+  let scrollSpyObserver = null;
+
+  function setupScrollSpy() {
+    const groupNav = document.getElementById("groupNav");
+    const catNav = document.getElementById("categoryNav");
+    if (!groupNav) return;
+
+    if (scrollSpyObserver) {
+      scrollSpyObserver.disconnect();
+      scrollSpyObserver = null;
+    }
+
+    const activePanel = document.querySelector(".view-panel.active");
+    if (!activePanel) return;
+
+    const genderKey = activePanel.dataset.gender;
+    const sections = REROLL_DATA[genderKey] || [];
+
+    const groupBlocks = activePanel.querySelectorAll(".group-block");
+    const sectionBlocks = activePanel.querySelectorAll(".category-section");
+
+    scrollSpyObserver = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter(e => e.isIntersecting)
+        .sort((a, b) => a.target.getBoundingClientRect().top - b.target.getBoundingClientRect().top);
+
+      if (visible.length === 0) return;
+
+      const topEntry = visible[0];
+      const target = topEntry.target;
+
+      if (target.classList.contains("group-block")) {
+        const groupId = target.id;
+        groupNav.querySelectorAll(".group-nav-btn").forEach(b => {
+          b.classList.toggle("active", b.dataset.groupTarget === groupId);
+        });
+
+        const groupName = target.dataset.group;
+        if (catNav && groupName) {
+          const currentlyActive = catNav.querySelector(".category-nav-btn.active");
+          const currentGroupRendered = currentlyActive
+            ? document.getElementById(currentlyActive.dataset.catTarget)?.dataset.group
+            : null;
+
+          if (currentGroupRendered !== groupName) {
+            renderCategoryNav(genderKey, sections, groupName);
+          }
+        }
+      } else if (target.classList.contains("category-section")) {
+        const sectionId = target.id;
+        if (catNav) {
+          catNav.querySelectorAll(".category-nav-btn").forEach(b => {
+            b.classList.toggle("active", b.dataset.catTarget === sectionId);
+          });
+        }
+      }
+    }, {
+      rootMargin: "-25% 0px -55% 0px",
+      threshold: 0
+    });
+
+    groupBlocks.forEach(block => scrollSpyObserver.observe(block));
+    sectionBlocks.forEach(block => scrollSpyObserver.observe(block));
+  }
+
+  /* ============================================================
+   * SCROLL TO TOP BUTTON
+   * ============================================================ */
+  function setupScrollTopButton() {
+    const btn = document.getElementById("scrollTopBtn");
+    if (!btn) return;
+
+    const SHOW_THRESHOLD = 400;
+    let ticking = false;
+
+    function updateVisibility() {
+      const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
+      const shouldShow = scrollY > SHOW_THRESHOLD;
+
+      if (shouldShow) {
+        btn.classList.add("is-visible");
+      } else {
+        btn.classList.remove("is-visible");
+      }
+      ticking = false;
+    }
+
+    window.addEventListener("scroll", () => {
+      if (!ticking) {
+        window.requestAnimationFrame(updateVisibility);
+        ticking = true;
+      }
+    }, { passive: true });
+
+    btn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    btn.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        btn.click();
+      }
+    });
+
+    updateVisibility();
+  }
+
   /* ---------- Init ---------- */
   function init() {
     if (!checkDependencies()) return;
@@ -846,6 +1244,9 @@
       panelsContainer.innerHTML = genders.map((g, i) => renderPanel(g, REROLL_DATA[g], i === 0)).join("");
     }
 
+    // Group navigation
+    renderGroupNav(genders[0], REROLL_DATA[genders[0]]);
+
     // Initial theme
     setPageTheme(genders[0]);
 
@@ -867,6 +1268,23 @@
 
         const genderSelect = document.getElementById("submitGender");
         if (genderSelect) genderSelect.value = target;
+
+        if (REROLL_DATA[target]) {
+          renderGroupNav(target, REROLL_DATA[target]);
+        }
+
+        setupScrollSpy();
+
+        // Reset search saat ganti gender
+        const searchInput = document.getElementById("searchInput");
+        if (searchInput && searchInput.value) {
+          searchInput.value = "";
+          const clearBtn = document.getElementById("searchClear");
+          const info = document.getElementById("searchInfo");
+          if (clearBtn) clearBtn.hidden = true;
+          if (info) info.hidden = true;
+          applySearch("");
+        }
       });
       btn.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") { e.preventDefault(); btn.click(); }
@@ -899,6 +1317,9 @@
 
     updateInfoButtonState();
     initSubmitForm();
+    setupScrollSpy();
+    setupSearch();
+    setupScrollTopButton();
   }
 
   /* ---------- Bootstrap ---------- */
