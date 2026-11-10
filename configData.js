@@ -1024,21 +1024,21 @@ window.REROLL_DATA = {
       shirt: { id: "99274284058977", image: "https://tr.rbxcdn.com/180DAY-adb8131cf0a9546fc7b46eee9e591844/420/420/Shirt/Webp/noFilter" },
       pants: { id: "109646850280151", image: "https://tr.rbxcdn.com/180DAY-548d1973a051f1b357d6df96963b6f4f/420/420/Pants/Webp/noFilter" } },
 
-    { rarity: "uncommon", name: "Ranger Set",
-      shirt: { id: "", image: "" },
-      pants: { id: "", image: "" } },
+    { rarity: "uncommon", name: "School set 1",
+      shirt: { id: "115741503077759", image: "https://tr.rbxcdn.com/180DAY-bd726421f5b9a1564a70ececfc12e572/420/420/Shirt/Webp/noFilter" },
+      pants: { id: "77963100856365", image: "https://tr.rbxcdn.com/180DAY-59ae2898a5b7d027fc0c6f3b502c4141/420/420/Pants/Webp/noFilter" } },
 
-    { rarity: "epic", name: "Phantom Set",
-      shirt: { id: "", image: "" },
-      pants: { id: "", image: "" } },
+    { rarity: "epic", name: "Samurai Set 2",
+      shirt: { id: "135116325860392", image: "https://tr.rbxcdn.com/180DAY-f5b57a484f3d2e9ad3afbf28a9dc77ff/420/420/Shirt/Webp/noFilter" },
+      pants: { id: "17122896197", image: "https://tr.rbxcdn.com/180DAY-945cb08ded6ff5806e27344efd73125f/420/420/Pants/Webp/noFilter" } },
 
-    { rarity: "legend", name: "Titan Set",
-      shirt: { id: "", image: "" },
-      pants: { id: "", image: "" } },
+    { rarity: "legend", name: "School Set 3",
+      shirt: { id: "111276888176563", image: "https://tr.rbxcdn.com/180DAY-9284b9720e67d5799010e43ea78573e7/420/420/Shirt/Webp/noFilter" },
+      pants: { id: "85937521259746", image: "https://tr.rbxcdn.com/180DAY-3456daf607ad417569e3305a83486873/420/420/Pants/Webp/noFilter" } },
 
     { rarity: "unknown", name: "Mystery Set",
-      shirt: { id: "", image: "" },
-      pants: { id: "", image: "" } }
+      shirt: { id: "71763211284719", image: "https://tr.rbxcdn.com/180DAY-65808386e6b0b4c6ab4bd38b95fe03e1/420/420/Shirt/Webp/noFilter" },
+      pants: { id: "96363340844754", image: "https://tr.rbxcdn.com/180DAY-56352b45b367a49b0c3aea6f4ec27f1d/420/420/Pants/Webp/noFilter" } }
   ]
 },
 
@@ -1219,17 +1219,17 @@ window.REROLL_DATA = {
       shirt: { id: "107705089764870", image: "https://tr.rbxcdn.com/180DAY-046f9944e69699d6e18dd786cb3676c7/420/420/Shirt/Webp/noFilter" },
       pants: { id: "119150852356677", image: "https://tr.rbxcdn.com/180DAY-0e0e789ea42c60b4e6a7c08df9d444a3/420/420/Pants/Webp/noFilter" } },
 
-    { rarity: "uncommon", name: "Ranger Set",
-      shirt: { id: "", image: "" },
-      pants: { id: "", image: "" } },
+    { rarity: "uncommon", name: "School set 1",
+      shirt: { id: "77851881450972", image: "https://tr.rbxcdn.com/180DAY-d2c9099564f63e2d7c72f21d00acc8c1/420/420/Shirt/Webp/noFilter" },
+      pants: { id: "96117830429367", image: "https://tr.rbxcdn.com/180DAY-722143b0a873f28501b5915a0171d669/420/420/Pants/Webp/noFilter" } },
 
-    { rarity: "epic", name: "Phantom Set",
-      shirt: { id: "", image: "" },
-      pants: { id: "", image: "" } },
+    { rarity: "epic", name: "School set 2",
+      shirt: { id: "137082907575439", image: "https://tr.rbxcdn.com/180DAY-a13ce13bf3e94b4cfcf5df5859e645d2/420/420/Shirt/Webp/noFilter" },
+      pants: { id: "95011091467628", image: "https://tr.rbxcdn.com/180DAY-224a6040be0d8a178ea408613743bd40/420/420/Pants/Webp/noFilter" } },
 
-    { rarity: "legend", name: "Titan Set",
-      shirt: { id: "", image: "" },
-      pants: { id: "", image: "" } },
+    { rarity: "legend", name: "School set 3",
+      shirt: { id: "71763211284719", image: "https://tr.rbxcdn.com/180DAY-65808386e6b0b4c6ab4bd38b95fe03e1/420/420/Shirt/Webp/noFilter" },
+      pants: { id: "95011091467628", image: "https://tr.rbxcdn.com/180DAY-224a6040be0d8a178ea408613743bd40/420/420/Pants/Webp/noFilter" } },
 
     { rarity: "unknown", name: "Mystery Set",
       shirt: { id: "", image: "" },
@@ -1289,6 +1289,12 @@ window.REROLL_DATA = {
       placeholder: "accessory",
       items: [
         { rarity: "common",   id: "99738036193450", image: "https://tr.rbxcdn.com/180DAY-5b74a79438debe9ecce016448352d131/420/420/BackAccessory/Webp/noFilter" },
+        { rarity: "common",   id: "11148975227", image: "https://tr.rbxcdn.com/180DAY-31c26b68419583c5369d94744ee73ac5/420/420/BackAccessory/Webp/noFilter" },
+        { rarity: "common",   id: "18264399521", image: "https://tr.rbxcdn.com/180DAY-ece53b4c8090bab89d0d6f6436c64052/420/420/BackAccessory/Webp/noFilter" },
+        { rarity: "common",   id: "127006644141057", image: "https://tr.rbxcdn.com/180DAY-8ee7a4703186ac392566dadcd167f928/420/420/BackAccessory/Webp/noFilter" },
+        { rarity: "common",   id: "78999591743220", image: "https://tr.rbxcdn.com/180DAY-7f8bd8a99ad4c35288e6b318b313e3e8/420/420/BackAccessory/Webp/noFilter" },
+        { rarity: "common",   id: "89424066195150", image: "https://tr.rbxcdn.com/180DAY-ed1e43315a381fd31af08b026b9f450b/420/420/BackAccessory/Webp/noFilter" },
+        { rarity: "common",   id: "", image: "" },
         { rarity: "common",   id: "", image: "" },
         { rarity: "common",   id: "", image: "" },
         { rarity: "epic",   id: "17070204546", image: "https://tr.rbxcdn.com/180DAY-b7e5cdaea7471b0fa20bca14980ef651/420/420/BackAccessory/Webp/noFilter" },
